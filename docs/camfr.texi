@@ -1,0 +1,3753 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename camfr.info
+@settitle CAMFR manual v1.3
+@c %**end of header
+
+@ifinfo
+CAMFR manual v1.3.
+
+Copyright @copyright{} 1998-2007 Peter Bienstman - Ghent University.
+@end ifinfo
+
+@ignore
+@ifinfo
+@format
+START-INFO-DIR-ENTRY
+* CAMFR: (camfr.info).  CAvity Modelling FRamework
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+@end ignore
+
+@titlepage
+@sp 10
+@title {CAMFR manual}
+@subtitle {version 1.3}
+@subtitle {September 2007}
+@author Peter Bienstman
+
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1998-2007 Peter Bienstman - Ghent University.
+@end titlepage
+
+@contents 
+
+@node top, Introduction, (dir), (dir)
+@menu
+* Introduction::                
+* Tutorial::                    
+* Modelling optical devices::   
+* Reference guide::             
+* Index::                       @detailmenu
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Tutorial
+
+* Example 1::                   
+* Example 2::                   
+* Example 3::                   
+* Example 4::                   
+* Example 5::                   
+* Example 6::                   
+* Example 7::                   
+
+Modelling optical devices
+
+* Photonic crystal devices::    
+* Locating laser modes::        
+* Current source in a cavity::  
+* 1D planar structures::        
+* Semi-infinite stacks::        
+* Defining complicated structures::  
+* General excitations for slabs::  
+* Dispersive materials::        
+* planar LEDs::                 
+* LEDs with gratings::          
+* CAMFR 3D::                    
+* Low level field plotting::    
+* Tips for troubleshooting problems::  
+
+Reference guide
+
+* set_lambda::                  
+* get_lambda::                  
+* set_N::                       
+* N::                           
+* set_polarisation::            
+* set_gain_material::           
+* set_stability::               
+* set_precision::               
+* set_precision_rad::           
+* set_sweep_from_previous::     
+* set_chunk_tracing::           
+* set_degenerate::              
+* set_orthogonal::              
+* set_solver::                  
+* set_mode_surplus::            
+* set_unstable_exp_threshold::  
+* set_backward_modes::          
+* set_circ_order::              
+* set_circ_field_type::         
+* set_lower_PML::               
+* set_upper_PML::               
+* set_circ_PML::                
+* set_lower_wall::              
+* set_upper_wall::              
+* free_tmps::                   
+* Coord::                       
+* Field::                       
+* Material::                    
+* Waveguide::                   
+* Mode::                        
+* E_Wall::                      
+* H_Wall::                      
+* Expression::                  
+* Term::                        
+* Stack::                       
+* Cavity::                      
+* BlochStack::                  
+* BlochMode::                   
+* InfStack::                    
+* Geometry::                    
+* Circle::                      
+* Square::                      
+* Rectangle::                   
+* Triangle::
+* Picture::                    
+* Planar::                      
+* Circ::                        
+* Slab::                        
+
+@end detailmenu
+@end menu
+
+@node Introduction, Tutorial, top, top
+@unnumbered Introduction
+@cindex introduction
+
+CAMFR (CAvity Modelling FRamework) is a fast, flexible, full-vectorial Maxwell
+solver, that is powerful and easy to use. Although it can tackle general 
+electromagnetic problems, its main focus is the simulation of optical devices,
+e.g. wavelength-scale structures (like photonic crystals), lasers 
+(like VCSELs) and light-emitting diodes (like RCLEDs).  
+
+As CAMFR is an ongoing active research project, it contains many attractive
+new algorithms and techniques which are currently not yet found in commercial
+software, most notably in the domain of advanced boundary conditions.
+
+Contrary to other, more traditional approaches like FDTD, CAMFR is not based
+on spatial discretisation or finite differences, but rather on 
+frequency-domain eigenmode expansion techniques. Instead of specifying the 
+fields on a discrete set of grid points in space, the fields are described as
+a sum of local eigenmodes in each z-invariant layer of the structure. What 
+this means concretely is that for a large variety of structures, CAMFR can be
+orders of magnitude faster than these traditional methods.
+
+CAMFR can calculate:
+@itemize @bullet
+@item
+the scattering matrix of a structure
+@item
+the field inside a structure, for any given excitation
+@item
+band diagrams of an infinite periodic structure
+@item
+threshold material gain and resonance wavelength of laser modes
+@item
+the response to a current source in an arbitrary cavity
+@item
+structures containing a semi-infinite repetition of a basic period
+@end itemize
+
+This functionality is currently available for two types of geometries:
+@itemize @bullet
+@item
+2D Cartesian structures
+@item
+3D cylindrical symmetric structures
+@end itemize
+
+The rest of this manual is structured as follows:
+@itemize @bullet
+@item
+a tutorial introducing the basic concepts of CAMFR
+@item
+a chapter containing examples which illustrate other features, like modelling 
+more complicated optical structures (VCSEls, spontaneous emission, photonic
+crystals,... )
+@item
+a reference guide
+@end itemize
+
+@node Tutorial, Modelling optical devices, Introduction, top
+@chapter Tutorial
+@cindex tutorial
+@cindex Python
+
+To run a simulation with CAMFR, you have to write a Python script describing
+the structure to be simulated and the calculations to be performed.
+
+Python (@uref{http://www.python.org}) is a general-purpose, clean and flexible 
+scripting language, that is easily extendible and that really shines at 
+integrating different pieces of software. Because Python is a full-blown
+programming language, it is e.g. very easy to write loops that sweep a certain
+simulation parameter. It is also trivial to use the CAMFR output in other
+Python-enabled applications, like e.g. a visualisation package.
+
+In this tutorial, we will introduce the basic concepts of CAMFR, as well as
+a minimal subset of the Python language that is needed to perform simulations.
+Although a more in-depth knowledge of Python is not really necessary, it is
+reassuring to know that CAMFR is integrated in a powerful programming language,
+making it possible to perform sophisticated simulations and postprocessing.
+
+@page
+
+@menu
+* Example 1::                   
+* Example 2::                   
+* Example 3::                   
+* Example 4::                   
+* Example 5::                   
+* Example 6::                   
+* Example 7::                   
+@end menu
+
+@node Example 1, Example 2, Tutorial, Tutorial
+@section Example 1: a simple waveguide example
+
+@cindex comments in Python
+@cindex Python, comments
+@cindex polarisation
+@cindex defining materials
+@cindex materials, defining
+@cindex defining slab waveguides
+@cindex slab waveguides
+@cindex waveguides, slabs
+@cindex propagation factor
+@cindex effective index
+@cindex field profiles
+
+
+The examples in this chapter can be found in the directory 
+@code{examples/tutorial} in the main CAMFR directory. If you're on a Windows
+system, this directory could by something like 
+@code{C:\python23\Lib\site-packages\camfr}, on a Unix system it is usually 
+@code{/usr/lib/python2.5/site-packages/camfr}.
+
+The first file 
+@code{tutorial1.py} introduces some simple waveguide simulations and 
+looks like this:
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Simple waveguide example
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(20)
+set_polarisation(TE)
+
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+@end group
+
+@group
+# Define waveguide.
+
+slab = Slab(air(2) + GaAs(0.5) + air(2))
+
+slab.calc()
+@end group
+
+@group
+# Print out some waveguide characteristics. 
+
+print slab.mode(0).kz()
+print slab.mode(1).n_eff()
+print slab.mode(2).field(Coord(2.25, 0, 0))
+print slab.mode(3).field(Coord(2.25, 0, 0)).E2()
+print slab.mode(4).field(Coord(2.25, 0, 0)).E2().real
+
+@end group
+
+@group
+# Do some interactive plotting.
+
+slab.plot()
+@end group
+@end example
+
+The first line @code{#!/usr/bin/env python} is an optional Unix incantation
+to tell the operating system that it should execute this script with the Python
+interpreter.
+
+The next lines illustrate that comments in Python start with @code{#}.
+
+The line @code{from camfr import *} informs Python that we want to start
+using the CAMFR library.
+
+The following lines are pretty self-explanatory:
+
+@example
+set_lambda(1)
+set_N(20)
+set_polarisation(TE)
+@end example
+
+We set the wavelength to 1 micron, use 20 eigenmodes to expand the field, and
+deal with TE polarisation. Next, we define GaAs to be a material with 
+refractive index 3.5 and air as a material with index 1:
+
+@example
+GaAs = Material(3.5)
+air  = Material(1.0)
+@end example
+
+We can now define a simple slab waveguide, with a GaAs core of half a micron 
+thick, and air cladding layers of 2 micron thick.
+
+@example
+slab = Slab(air(2) + GaAs(0.5) + air(2))
+@end example
+
+@cindex coordinate system
+
+This structure is implicitly assumed to be sandwiched between two perfect 
+electric conductors (PECs), as indicated in fig. 1:
+
+@image{figs/fig1}
+
+This figure also indicates the conventions for the coordinate system. The 
+@code{x}-axis lies along the cross-section of the slab waveguide and starts 
+at the bottom wall. The waveguide is uniform in the @code{y}- and @code{z}-
+direction. The eigenmodes of the waveguide propagates along the  
+@code{z}-direction.
+
+Using the command @code{slab.calc()}, CAMFR will calculate the properties of
+the slab, some of which are then printed out in the following lines of the 
+Python script.  
+
+@code{print slab.mode(0).kz()} prints out the propagation factor of the
+fundamental mode of the slab, while @code{slab.mode(1).n_eff()} displays
+the effective index of the first order mode.
+
+@code{print slab.mode(2).field(Coord(2.25, 0, 0))} shows the field of the 
+second order mode at @code{x=2.25}, which is in the center of the core. This 
+field consists of six complex numbers. @code{E1}, @code{E2}, @code{Ez} are the
+phasors for the components of the electric field, and @code{H1}, @code{H2},
+@code{Hz} represent the magnetic field. Here, 1 refers to the 
+@code{x}-direction and 2 to the @code{y}-direction. (For cylindrical 
+structures, 1 refers to the radial direction and 2 to the angular direction.)
+
+@code{print slab.mode(4).field(Coord(2.25, 0, 0)).E2().real} illustrates how
+we can extract the real part from a complex number in Python. (@code{real} is
+a built-in Python attribute of a complex number, and as such requires no extra
+parentheses.) Similarly, the imaginary component can be extracted with
+@code{imag}.
+
+Finally, @code{slab.plot()} shows a widget which can be used to interactively explore the properties of the waveguide modes, field profiles and effective index distribution. Note that you can zoom in these plots by drawing a rectangle with the left mouse button pressed. You can also bring up the effective index distribution in the complex plane and click on the modes in that plane to plot their field profiles.
+
+@cindex invoking Python scripts
+@cindex Python, invoking scripts
+
+The Python script can be executed in a number of ways. You can type 
+@code{python tutorial1.py}, or under Unix you can just suffice by typing 
+@code{tutorial1.py}, provided the first line of your script contains  
+@code{#!/usr/bin/env python} and the script file's executable bit is set (with 
+@code{chmod +x tutorial1.py}). (Note: all of these command need to be typed in 
+on the system prompt, not on the Python prompt.)
+
+Regardless of the invocation method, the output that will be printed out will
+look something like this:
+
+@example
+CAMFR 1.3 - Copyright (C) 1998-2007 Peter Bienstman - Ghent University.
+
+(21.3499038707+0j)
+(3.07668661368+0j)
+E1=(0,0), E2=(-16.0633,0), Ez=(0,0)
+H1=(0.105632,0), H2=(0,0), Hz=(0,0.0966439)
+(24.2902148016+0j)
+0.649002451002
+@end example
+
+@cindex interactive Python session
+@cindex Python, interactive session
+
+There is also a third way of starting the script, which is 
+@code{python -i tutorial1.py}. This will print out the same output, but will
+afterwards present you with an interactive Python session. After Python's >>>
+prompt, you can type any Python command, like e.g. 
+@code{print slab.mode(10).kz()}. This allows you to rapidly inspect any 
+simulation results, without the need to adapt your script file. This 
+Matlab-like interactivity can be very productive, because it can give you
+rapid feedback on your simulation results.
+
+If you are on a Windows machine and use the Active Python distribution from 
+@uref{http://www.activestate.com} as your Python environment, you will have
+access to an interactive Python session semi-automatically through the 
+PythonWin environment. Consult the Active Python documentation for more 
+information.
+
+@page
+
+@node Example 2, Example 3, Example 1, Tutorial
+@section Example 2: a simple stack example
+
+The next example shows how to calculate the scattering matrix of a stack
+of waveguides and how to loop over a simulation parameter:
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Simple stack example
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(20)
+set_polarisation(TE)
+@end group
+
+@group
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+@end group
+
+@group
+# Define slabs.
+
+slab  = Slab(air(2) + GaAs(0.5) + air(2))
+space = Slab(air(4.5))
+@end group
+
+@group
+# Print the reflectivity for different lengths.
+
+for L in arange(0.005, 0.100, 0.005):
+    stack = Stack(space(0) + slab(L) + space(0))
+    stack.calc()
+    print L, abs(stack.R12(0,0))
+@end group
+@end example
+
+Apart from the same slab waveguide as in the previous example, we also define
+a second slab called @code{space}, a uniform air layer.
+
+Let us skip ahead to this line:
+
+@cindex stacks, defining
+@cindex defining stacks
+
+@example
+    stack = Stack(space(0) + slab(L) + space(0))
+@end example
+
+This line defines a stack consisting of a sequence of waveguide sections, as
+shown in fig. 2:
+
+@image{figs/fig2}
+
+Because of the way eigenmode expansion works, the incidence and exit 
+waveguides (@code{space} in this case) are infinitely long. The thickness of 
+the sections @code{space(0)} just serve to indicate the location of the 
+reference input and output planes.
+
+@cindex scattering matrices
+
+The command @code{stack.calc()} is used to calculate the scattering matrix of
+the stack named @code{stack}. Fig. 2 indicates the meaning of the four 
+submatrices of this scattering matrix. There are two reflection and 
+transmission matrices, for incidence from either medium 1 or medium 2.
+
+More specifically, if you have e.g. an incident field from the left in medium
+1 , described by a column vector @code{f} of expansion coefficients, the 
+reflected field will be described by the product @code{R12 x f}.
+
+So, @code{stack.R12(0,0)} is the reflection coefficient of the fundamental mode
+of the incident waveguide back to itself.
+
+@cindex looping over simulation parameters
+@cindex Python, loops 
+
+Also illustrated in this example is how to create loops in Python, e.g. to
+vary the length in central waveguide section from 5 to 100 nm (excluding 100 
+nm) in steps of 5 nm:
+
+@example
+@group
+for L in arange(0.005, 0.100, 0.005):
+    stack = Stack(space(0) + slab(L) + space(0))
+    stack.calc()
+    print L, abs(stack.R12(0,0))
+@end group
+@end example
+
+@cindex Numpy
+@cindex whitespace in Python
+@cindex Python, whitespace
+
+The function @code{arange} is not part of the core Python language, but rather
+of the extension package NumPy. 
+
+Very important to notice is that Python uses indentation to distinguish 
+statements which form part of the loop and which don't. So, writing
+
+@example
+@group
+for L in arange(0.005, 0.100, 0.005):
+    stack = Stack(space(0) + slab(L) + space(0))
+    stack.calc()
+print L, abs(stack.R12(0,0))
+@end group
+@end example
+
+@noindent
+
+would only print out the results for the last value of @code{L}, which
+incidentally is 0.095. It does not really matter if you use tabs or spaces to
+indent, as long as you are consistent.
+
+It is of course trivial to create nested loops:
+
+@example
+@group
+for x in arange(0.000, 0.100, 0.010):
+    for y in arange(0.000, 0.200, 0.020):
+        do_something()
+@end group
+@end example
+
+@page
+
+@node Example 3, Example 4, Example 2, Tutorial
+@section Example 3: another stack example
+
+In the next example, we will introduce PML boundary conditions and show how
+to work with files.
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Another stack example
+#
+####################################################################
+
+from camfr import *
+
+# Set constants.
+
+set_lambda(1.5)
+set_N(20)
+set_polarisation(TE)
+@end group
+
+@group
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+@end group
+
+@group
+# Define waveguide sections.
+
+set_lower_PML(-0.1)
+set_upper_PML(-0.1)
+
+normal = Slab(air(2.0) + GaAs(0.5) + air(2.0))
+thick  = Slab(air(1.9) + GaAs(0.7) + air(1.9))
+@end group
+
+@group
+# Calculate reflection of the fundamental mode for different 
+# lengths of the central thick section.
+
+outfile = file("tutorial3.out",'w')
+
+for L in arange(0.000, 0.500, 0.010):    
+    stack = Stack(normal(0) + thick(L) + normal(0))
+    stack.calc()
+    print >> outfile, L, abs(stack.R12(0,0))
+
+outfile.close()
+@end group
+@end example
+
+This script is very similar in structure to the previous one, and describes a
+waveguide with a core thickness of 0.5 micron, which widens to 0.7 um in a
+central section with length @code{L} (fig. 3).
+
+@image{figs/fig3}
+
+@cindex PML
+@cindex perfectly matched layer
+@cindex complex thickness
+@cindex boundary conditions
+@cindex parasitic reflections
+
+@code{set_lower_PML(-0.1)} gives all the lower claddings in subsequently
+defined slabs an imaginary component to its thickness of @code{-0.1j}.
+Similarly for @code{set_upper_PML}. @code{lower} refers to the layer at 
+@code{x=0}, which is the first term in the expression used to define the slab.
+
+This imaginary cladding thicknesses implement the so-called perfectly matched 
+layer (PML) boundary conditions. PML can absorb radiation travelling toward 
+the walls, without introducing any additional parasitic reflections, 
+regardless of wavelength, incidence angle or polarisation of the incident
+light. The larger the imaginary component (in absolute value) of the 
+thickness, the stronger the absorption.
+
+The presence of advanced boundary conditions like PML is a very powerful
+feature of CAMFR. Without it, the PEC walls would reflect all the
+incoming radiation and send it back the structure under study, where it can
+disturb the simulation results.
+
+@cindex file output
+@cindex Python, file output
+@cindex writing simulation results to file
+
+The current example also illustrates how to write output to a file, rather
+than to the screen:
+
+@example
+@group
+outfile = file("myfile",'w') # 'w' indicates writing.
+print >> outfile, "Hello world"
+outfile.close()
+@end group
+@end example
+
+@page
+
+@node Example 4, Example 5, Example 3, Tutorial
+@section Example 4: a circular stack
+
+Not only can CAMFR deal with 2D Cartesian structures, it can also handle
+circular waveguides with an arbitrary number of index steps in the radial 
+direction.
+
+This is illustrated in the following Python file:
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# A circular stack
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(20)
+set_circ_order(0)
+set_polarisation(TE)
+
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+
+# Define uniform circular waveguide.
+
+set_circ_PML(-0.1)
+space = Circ(air(1))
+@end group
+
+@group
+# Calculate the reflectivity for different widths
+# of the central core.
+
+for r in arange(0.100, 0.500, 0.050):
+    circ = Circ(GaAs(r) + air(1 - r))
+    stack = Stack(space(0) + circ(0.5) + space(0))
+    stack.calc()
+    print r, abs(stack.R12(0,0))
+    free_tmps()
+@end group
+@end example
+
+The structure defined by this script is shown in fig. 4.
+
+@image{figs/fig4}
+
+@cindex Bessel order
+@cindex circular waveguides, Bessel order
+@cindex polarisation, circular waveguides
+@cindex circular waveguides, polarisation
+
+A new command specifically related to circular structures is 
+@code{set_circ_order(0)}, which tells CAMFR to look for eigenmodes with
+Bessel order 0. For this Bessel order, we can have both TE and TM modes,
+and in this case we choose for TE modes by setting @code{set_polarisation(TE)}.
+For Bessel orders other than 0, the modes are hybrid TE/TM, and any use
+of @code{set_polarisation} will be ignored.
+
+@cindex circular waveguides
+@cindex waveguides, circular
+@cindex defining circular waveguides
+
+Circular waveguides are defined in pretty much the same way as slab waveguides,
+except that the argument to Circ describes the structure from @code{r=0} to
+the wall, rather than from wall to wall as was the case with slabs. PML in
+circular structures is set by using @code{set_circ_PML}, which adds a complex
+thickness to the cladding layer.
+
+@cindex freeing temporaries
+@cindex free_temps()
+
+Another new command that is introduced in this example is @code{free_temps()},
+which is called at the end of each loop iteration to free all the data 
+structures (eigenmodes, scattering matrices, ...) that were allocated so far.
+The default mode of operation in CAMFR is to keep this data around, so that
+it might be reused in future calculations. However, in this particular example,
+this would only waste a lot of memory, since every iteration through the loop 
+creates a completely new structure with a different core width, whose results 
+cannot reused in subsequent calculations.
+
+This is different from @code{example2.py}, where we did not create new 
+waveguides, but only varied the length of the waveguide sections. 
+In this case, it made sense to keep the previous calculation results around, 
+because eigenmode expansion can easily update the scattering matrices of a 
+structure if only the length of the individual waveguide sections changes.
+
+For a more complex example dealing with Omniguide fibres, see 
+@code{omniguide.py} in the @code{examples/contrib} directory.
+
+@page
+
+@node Example 5, Example 6, Example 4, Tutorial
+@section Example 5: field profiles in a stack
+
+@cindex field profiles in a stack
+@cindex stack, field profiles
+
+In this example, we will excite the stack from example 2 with a certain
+incident field distribution and calculate the resulting field in the stack.
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Calculate field profiles in a stack.
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(20)
+set_polarisation(TE)
+
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+
+@end group
+@group
+# Define stack.
+
+set_lower_PML(-0.1)
+set_upper_PML(-0.1)
+
+slab  = Slab(air(2) + GaAs(.5) + air(2))
+space = Slab(air(4.5))
+
+stack = Stack(space(0) + slab(0.5) + space(0))
+
+# Set incident field and calculate stack.
+
+inc = zeros(N())
+inc[0] = 1
+stack.set_inc_field(inc)
+
+stack.calc()
+
+@end group
+@group
+
+# Save the field to a file.
+# Do some interactive plotting.
+
+stack.plot()
+@end group
+@end example
+
+The new code is in the following lines:
+
+@example
+inc = zeros(N())
+inc[0] = 1
+stack.set_inc_field(inc)
+@end example
+
+These commands prepare a column vector named @code{inc} describing the 
+incident field. This vector consists of @code{N} elements, one for each 
+eigenmode. Initially, all elements are zero, but afterwards, we set the 
+element corresponding to the fundamental mode equal to one. This vector is
+then used as the incident field.
+
+@code{stack.plot()} brings up a widget which can show and animate the field profile in a stack, write the pictures to files, ... . Once again, you can zoom in these widgets by drawing a rectangle with the left mouse button pressed.
+
+If you want to do some post-processing of the field data yourself, you can access it by commands like @code{stack.field(Coord(x,0,z))}.
+
+
+@page
+
+@node Example 6, Example 7, Example 5, Tutorial
+@section Example 6: exploiting symmetry
+
+In this example, we will simulate the same structure as in the previous
+example, but this time we will exploit the symmetry in order to speed up the
+calculation.
+
+@cindex symmetry
+@cindex exploiting symmetry
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Calculate field profiles in a stack, but exploit symmetry
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(10)
+set_polarisation(TE)
+
+@end group
+@group
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+
+# Define stack.
+
+set_upper_PML(-0.1)
+
+set_lower_wall(slab_H_wall)
+
+slab  = Slab(GaAs(.25) + air(2))
+space = Slab(air(2.25))
+
+stack = Stack(space(0) + slab(0.5) + space(0))
+
+# Set incident field and calculate stack.
+
+inc = zeros(N())
+inc[0] = 1
+stack.set_inc_field(inc)
+
+@end group
+@group
+# Save the field to a file.
+
+outfile = file("tutorial6.out",'w')
+
+for x in arange(0.000, 2.250, 0.100):
+    for z in arange(0.000, 0.500, 0.010):
+        print >> outfile, abs(stack.field(Coord(x,0,z)).E2()),
+    print >> outfile
+
+outfile.close()
+@end group 
+@end example
+
+The structure we are studying is symmetric along the horizontal axis. If we
+want to excite it with a symmetric excitation as well, we can speed up the
+simulation by introducing a symmetry wall and only calculating half of the
+structure (fig. 5). 
+
+@image{figs/fig5}
+
+@cindex boundary conditions for slabs
+@cindex slab waveguides, boundary conditions
+
+For excitation with the fundamental TE mode, we need to introduce a magnetic
+wall at the center. This is done with the command 
+@code{set_lower_wall(slab_H_wall)} before defining any slabs. @code{lower}
+refers to the bottom side of the slabs (@code{x=0}). Obviously, there
+exists a command @code{set_upper_wall(...)} as well. It is also possible to
+specify a @code{slab_E_wall} as boundary condition, but this not necessary
+as it is the default.
+
+Because the structure now has half the size as the original structure, we can
+suffice with only half as many modes, which typically buys us a factor eight
+in computation time.
+
+Another thing to pay attention to is that in this case there is only PML
+at the upper wall, since the lower wall is effectively the inside of the
+structure we want to model, so we don't want any absorbing boundary
+conditions there.
+
+@cindex Python, preventing line break
+@cindex linebreaks, preventing
+
+This time, instead of interactively plotting the field, we choose to write it to a file for further analysis. When printing the field, note the trailing command at the end of the @code{print} statement. This will prevent the @code{print} statement from going to the next line. After we have iterated over all @code{z}-values for a given @code{x}-value, we force a line break with the command @code{print >> outfile}. In this way, the field data is nicely arranged in a matrix format.
+
+
+@page
+
+@node Example 7,  , Example 6, Tutorial
+@section Example 7: using functions to define complex structures
+
+In this final example we will illustrate how we can simplify the definition
+of non-trivial structures by using Python functions, rather than explicitly
+specifying the refractive index profile. 
+
+The following code shows how we automatically generate a staircase 
+approximation of a parabolic refractive index profile.
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Parabolic refractive index profile.
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(20)
+set_polarisation(TE)
+
+w = 5.0  # width of waveguide
+
+set_upper_PML(-0.1)
+set_lower_PML(-0.1)
+
+@end group
+@group
+# Define parabolic refractive index profile.
+
+def index(x):
+    max_n = 3.5  # max refractive index
+    a = 0.1      # slope
+    n = max_n - a * pow(w / 2.0 - x, 2)
+    if n < 1:
+        return 1
+    else:
+        return n
+
+@end group
+@group
+# Construct a staircase approximation.
+
+expr = Expression()
+materials = [] 
+steps = 10
+for i in range(steps):
+    x = i * w / steps
+    m = Material(index(x + 0.5 * w / steps))
+    materials.append(m)
+    d = w / steps 
+    expr.add(m(d))
+
+slab = Slab(expr)
+
+@end group
+@group
+# Compare continuous and staircase profile.
+
+outfile = file("tutorial7.out",'w')
+
+steps2 = 100
+for i in range(steps2):
+    x = i * w / steps2
+    print >> outfile, x, index(x), slab.n(Coord(x, 0, 0)).real
+
+outfile.close()
+@end group
+@end example
+
+@cindex functions in Python
+@cindex Python, functions
+The lines after @code{def index(x):} define a function which takes as argument
+the @code{x} coordinate and returns the refractive index at this position in 
+a certain parabolic refractive index profile. This code also illustrates the 
+use of conditionals, and stresses once again the importance of indentation in 
+Python.
+
+@cindex constructing expressions
+@cindex expressions, constructing
+
+The next block of code creates the expression @code{expr}, which will describe
+the staircase approximation of the index profile. The width of the waveguide
+will be divided in @code{steeps} piecewise constant parts. 
+
+First, an empty expression is created: @code{expr = Expression()}. This
+expression is gradually filled in a loop while @code{i} runs from 0 to 
+@code{steps-1}.
+
+A material @code{m} is created with the refractive index from the middle of
+the current step of the index profile. 
+Finally, a term is added to the expression which describes the current step,
+consisting of material @code{m} with thickness @code{d}: 
+@code{expr.add(m(d))}.
+
+At the end of the loop, this expression is used to define a slab, which can
+be used in subsequent calculations : @code{slab = Slab(expr)}.
+
+@cindex garbage collection in Python
+@cindex Python, garbage collection 
+
+Very important to notice is that we keep hold of the materials @code{m} we 
+create in the loop, by first defining an empty list @code{materials = []},
+to which we add each material: @code{materials.append(m)}.
+
+The reason for this lies in Python's garbage collection. Without the list
+@code{materials} to hold on to the materials, Python will see @code{m} as
+just a temporary variable, which it will deallocate and garbage collect after
+the loop has finished. Since we still need these materials in the subsequent
+calculations, we have to tell Python not to free them by storing them in a
+list at the top level in the source code.
+
+@page
+
+@node Modelling optical devices, Reference guide, Tutorial, top
+@chapter Modelling optical devices
+
+In this chapter, we will build upon the basic concepts introduced in the
+tutorial chapter to model more complicated optical devices. More specifically,
+we will see how to calculate band diagrams for infinite periodic stacks, how
+to locate laser modes in arbitrary cavities and how to calculate the response
+to a current source inside a cavity. We will also explain how to model purely
+1D planar structures, how to model semi-infinite stacks, how to input
+more complicated structures using geometric primitives, and how to use more
+complex excitations for slabs.
+
+All of this functionality is available for both geometries (2D Cartesian,
+cylindrical), although the examples given are only for a single geometry.
+
+@menu
+* Photonic crystal devices::    
+* Locating laser modes::        
+* Current source in a cavity::  
+* 1D planar structures::        
+* Semi-infinite stacks::        
+* Defining complicated structures::  
+* General excitations for slabs::  
+* Dispersive materials::        
+* planar LEDs::                 
+* LEDs with gratings::          
+* CAMFR 3D::                    
+* Low level field plotting::    
+* Tips for troubleshooting problems::  
+@end menu
+
+@node Photonic crystal devices, Locating laser modes, Modelling optical devices, Modelling optical devices
+@section Modelling photonic crystal devices
+
+@cindex modelling photonic crystal devices
+@cindex photonic crystal devices
+
+Let us model the photonic crystal splitter from fig 2.1:
+
+@image{figs/splitter}
+
+This device consists of a 2D periodic arrangement of GaAs rods in air, which
+is impenetrable for certain wavelengths. By omitting some rods, we can create
+channels which guide the light. In the example of the splitter, light enters
+the structure from the left, is guided by the air channel in the photonic
+crystal, and finally split into two equal parts.
+
+Although we can already analyse such a structure with the knowledge we have
+from the tutorial, there are a number of techniques that can be applied to
+speed up the simulation. This is illustrated in the following code, which
+can be found in @code{examples/other}:
+
+@example
+@group
+#! /usr/bin/env python
+
+###################################################################
+#
+# 90 deg 3dB splitter in rectangular lattice of rectangular 
+# GaAs rods in air
+#
+###################################################################
+
+from camfr import *
+
+set_polarisation(TE)
+set_lambda(1.5)
+set_N(50)
+
+@end group
+@group
+# Set geometry parameters
+
+GaAs = Material(3.4)
+air  = Material(1.0)
+  
+a = .600     # period
+r = .150/2.0 # rod radius
+
+set_lower_wall(slab_H_wall)
+
+cl = 0 # air cladding
+
+periods = 3  # periods above outer waveguide
+sections = 1 # intermediate 90 deg sections
+
+@end group
+@group
+# Define slabs.
+
+no_rods = Slab(air(a-r+(sections+1+periods)*a+cl))
+
+# Central waveguide.
+ 
+cen = Slab(  air(a-r)                                               \
+           + (sections+1+periods)*(GaAs(2*r) + air(a-2*r))          \
+           + air(cl) )
+
+@end group
+@group
+# Vertical section.
+
+ver = Slab(  air(a-r + (sections+1)*a)                              \
+           + periods*(GaAs(2*r) + air(a-2*r) )                      \
+           + air(cl) )
+
+# Outer arms.
+ 
+arm = Slab(  GaAs(r) + air(a-2*r)                                   \
+           + sections*(GaAs(2*r) + air(a-2*r))                      \
+           + air(a)                                                 \
+           + periods*(GaAs(2*r) + air(a-2*r))                       \
+           + air(cl) )
+
+@end group
+@group
+# Find lowest order waveguide mode.
+
+wg = BlochStack(cen(2*r) + no_rods(a-2*r))
+wg.calc()
+
+print wg
+
+guided = 0
+for i in range(2*N()):
+    if (abs(wg.mode(i).kz().imag) < abs(wg.mode(guided).kz().imag)):
+        if wg.mode(i).kz().real > 0:
+            guided = i
+
+@end group
+@group
+# Calculate splitter.
+
+splitter = Stack(  5*(cen(2*r) + no_rods(a-2*r))                   \
+                 +    ver(2*r) + no_rods(a-2*r)                    \
+                 + 5*(arm(2*r) + no_rods(a-2*r)) )
+
+splitter.set_inc_field(wg.mode(guided).fw_field())
+splitter.calc()
+
+print "R", splitter.R12(0,0)
+
+@end group
+@group
+# Calculate field.
+
+outfile = open("splitter.out", 'w')
+
+for x in arange(0.000, no_rods.width() - cl - a, a/20.):
+    for z in arange(0.000, splitter.length(), a/20.):
+        print >> outfile, abs(splitter.field(Coord(x, 0, z)).E2()),
+    print >> outfile
+
+outfile.close()    
+@end group
+@end example
+
+@cindex Python, line continuation
+@cindex line continuation in Python
+Note in this example the use of @code{\} to split up long lines. This is 
+necessary because of the way Python relies on whitespace.
+
+An important note is that CAMFR always uses the polarisation definitions as
+they are conventional in waveguide theory, i.e. TE polarisation corresponds 
+here to the electric field along the rods, out of the plane of the picture. 
+Unfortunately in photonic crystal literature this is called TM polarisation.
+
+Now, we need to find a suitable excitation in order to calculate the field
+profiles in this structure. In other methods like FDTD, we would do this by
+placing a current source in a very long stretch of the photonic crystal 
+waveguide in the left of fig. 2.1. After this long stretch of waveguide, an 
+equilibrium field distribution with only the fundamental mode of the waveguide
+would appear, which can be used to excite the splitter.
+
+@cindex Bloch modes
+@cindex band diagrams
+This is rather slow, since we need a long stretch of waveguide to obtain this
+equilibrium field distribution. However, because of the frequency domain 
+nature of CAMFR, we can directly excite the structure with a quasi-equilibrium
+field distribution. In order to do that, we first perform a sub-calculation
+which gives us the Bloch modes of the photonic crystal waveguide without
+the splitter:
+
+@example
+@group
+wg = BlochStack(cen(2*r) + no_rods(a-2*r))
+wg.calc()
+@end group
+@end example
+
+Here, we define @code{wg} to be an infinite repetition of the sections 
+@code{cen} and @code{no_rods}. After a call to @code{calc}, we can examine
+the properties of this waveguide and its Bloch modes just like any other
+waveguide mode (with calls to @code{kz()}, @code{field()}, ...). The only
+difference is that a BlochStack has @code{2N} modes rather than @code{N},
+because it contains both forward and backward Bloch modes.
+
+(Note that if we wanted to calculate the full band diagram of this periodic
+structure in the direction of @code{z}, we simply have to place this 
+calculation inside a loop over all frequencies of interest, and look at 
+the BlochModes where the imaginary part of the propagation constant is
+sufficiently small.) 
+
+After we inspect the propagation factors to determine to locate the fundamental
+mode, we excite the splitter with the forward field of this mode:
+
+@example
+splitter.set_inc_field(wg.mode(guided).fw_field())
+@end example
+
+This gives us a quasi-equilibrium field distribution almost immediately, and
+we can very efficiently calculate the properties of the splitter using only
+a small computational domain.
+
+@page
+
+@node Locating laser modes, Current source in a cavity, Photonic crystal devices, Modelling optical devices
+@section Locating laser modes
+
+The following code illustrates how to use CAMFR to find laser modes in a
+cavity, in this case a cylindrical oxidised VCSEL (vertical-cavity 
+surface-emitting laser):
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Finds a laser mode in a VCSEL (from COST 268 modelling exercise.)
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(.980)
+set_N(100)
+set_circ_order(1)
+
+@end group
+@group
+# Define materials.
+
+GaAs_m   = Material(3.53)
+AlGaAs_m = Material(3.08)
+AlAs_m   = Material(2.95)
+AlOx_m   = Material(1.60)
+air_m    = Material(1.00)
+
+gain_m = Material(3.53)
+loss_m = Material(3.53 - 0.01j)
+
+set_gain_material(gain_m)
+
+@end group
+@group
+# Define geometry parameters
+
+set_circ_PML(-0.1)
+
+r = 4.0
+d_cladding = 4.0
+ 
+d_GaAs   = .06949
+d_AlGaAs = .07963
+
+@end group
+@group
+# Define cross sections
+
+GaAs   = Circ(  GaAs_m(r+d_cladding))
+AlGaAs = Circ(AlGaAs_m(r+d_cladding))
+air    = Circ(   air_m(r+d_cladding))
+
+ox = Circ(AlAs_m(r) + AlOx_m(d_cladding))
+QW = Circ(gain_m(r) + loss_m(d_cladding))
+
+@end group
+@group
+# Set oxide window position.
+
+position = 4 # 1: node, 5: antinode
+x = (5. - position) * d_AlGaAs/5.
+
+@end group
+@group
+# Define top half of cavity.
+  
+top = Stack( (GaAs(0) + AlGaAs(x)) + ox(.2*d_AlGaAs)           \
+    + (AlGaAs(.8*d_AlGaAs - x) + GaAs(d_GaAs)                  \
+    + 24*(AlGaAs(d_AlGaAs) + GaAs(d_GaAs)) + air(0)) )
+  
+# Define bottom half of cavity.
+
+bottom = Stack(GaAs(.13659) + QW(.00500)                       \
+    + (GaAs(.13659) + 30*(AlGaAs(d_AlGaAs) + GaAs(d_GaAs) + GaAs(0))) )
+
+@end group
+@group  
+# Define cavity and find laser mode.
+
+cavity = Cavity(bottom, top)
+
+cavity.find_mode(.980, .981)
+@end group
+@end example
+
+@cindex VCSELs
+@cindex lasers
+
+First, we need to divide the cavity in an arbitrary location in a top and a
+bottom part (the dashed line in fig. 2.2):
+
+@image{figs/vcsel}
+
+We then define two stacks describing these top and bottom part, starting from
+the dashed line. Defining the cavity is as simple as writing
+
+@example
+cavity = Cavity(bottom, top)
+@end example
+
+In order to locate a laser mode, we need to vary the wavelength to achieve
+phase resonance and to vary the material gain in the active region to achieve
+amplitude resonance. For that, we first had to inform CAMFR which material
+would provide the gain:
+
+@example
+set_gain_material(gain_m)
+@end example
+
+From the definition of the waveguide @code{QW}, we can see that this device
+provides gain in the central part of the active region, while there is a
+small constant loss outside of the oxide aperture.
+
+Finally, the command @code{cavity.find_mode(.980, .981)} will locate a laser
+mode in the wavelength range between 980 and 981 nm. Once it has found
+such a mode, it will print out its wavelength and threshold material gain.
+There are a few other arguments that can be passed to @code{find_mode()} to
+control the search process, but for that we refer to the reference guide.
+
+@cindex grouping diagonal substacks
+
+A trick worth pointing out is the use of parentheses to group all the
+transverse uniform waveguide sections in the definitions of @code{top} and
+@code{bottom}. These substacks have diagonal reflection and 
+transmission matrices and can therefore be calculated more efficiently.
+By explicitly grouping these diagonal substacks, CAMFR will recognise them
+as such, rather than treating the whole stack as completely non-diagonal.
+
+@page
+
+@node Current source in a cavity, 1D planar structures, Locating laser modes, Modelling optical devices
+@section Putting a current source inside a cavity
+
+@cindex Green's function
+@cindex current source
+@cindex response to current source
+
+This section illustrates how we can put a current source inside a cavity.
+This can be useful either to calculate the Green's function of a cavity, or
+the calculate the modification of spontaneous emission in resonant-cavity
+LEDs.
+
+As a first example, we calculate the modification of spontaneous emission
+of a horizontal current dipole placed between two parallel metallic plates.
+This 3D planar open geometry is converted to a 3D closed cylindrical geometry
+by using PMLs (fig 2.3). Since this configuration can also be calculated
+analytically, we can easily verify the results.
+
+@image{figs/parplate}
+
+@example
+@group
+#! /usr/bin/env python
+
+###################################################################
+#
+# Calculates modification of spontaneous emission of a dipole
+# between two metal plates.
+#
+###################################################################
+
+from camfr import *
+
+set_N(60)
+set_lambda(1)
+set_circ_order(1)
+set_circ_field_type(cos_type)
+
+@end group
+@group
+# Define waveguide and wall.
+
+set_circ_PML(-0.5)
+
+air_m = Material(1.0)
+air = Circ(air_m(10))
+air.calc()
+
+wall = E_Wall(air)
+
+@end group
+@group
+# Calculate change in spontaneous emission rate.
+
+for d in arange(0.01, 3.0, 0.05):     
+
+    # Define cavities.
+
+    half      = Stack(air(d/2.) + wall)
+    half_open = Stack(air(d/2.))
+
+    source_pos  = Coord(0,0,0)
+    orientation = Coord(1,0,0)
+    
+    cav = Cavity(half, half)
+    cav.set_source(source_pos, orientation)
+
+    cav_open = Cavity(half_open, half_open)
+    cav_open.set_source(source_pos, orientation)
+
+@end group
+@group
+    # Analytic formula for spontaneous emission rate.
+
+    x = floor(d+0.5)
+    exact = 3.*x/4./d + pow(x/d,3)/4. - x/16./d/d/d
+
+    # Numerical formula as ratio of total emitted powers.
+
+    numeric =   half.     field(Coord(0,0,0)).E1().real \
+              / half_open.field(Coord(0,0,0)).E1().real 
+
+    print d, exact, numeric
+@end group
+@end example
+
+@cindex angular dependence of fields
+@cindex field, angular dependence
+This script introduces a couple of new features. First of all 
+@code{set_circ_field_type()}, which is only relevant for these kind of source
+problems, indicates whether the generated fields have @code{cos} or @code{sin}
+type angular dependence. For calculating scattering matrices, these are 
+completely decoupled, but for source problems, which one of these field types
+is excited is determined by the orientation of the current source.
+
+@cindex walls in the @code{z} direction
+@code{wall = E_Wall(air)} defines a perfectly conducting metal plate with
+air on the incidence side. This structure can be used in an expression to 
+describe the horizontal metal walls surrounding the dipole.
+
+In order to place a source inside a cavity at a given position and with a 
+given vectorial orientation, we use the following command:
+ 
+@code{cav.set_source(source_pos, orientation)}
+
+@cindex power generated by a dipole
+From Poynting's theorem, we can calculate the total power radiated by this
+dipole from the real part of the electric field at the dipole itself.
+
+This is much more accurate than explicitly calculating power flows using e.g.
+the commands @code{stack.inc_S_flux} and @code{stack.ext_S_flux} to calculate 
+the real power flow at the incidence and at the exit side of a stack (see 
+reference manual).
+
+
+@page
+
+@node 1D planar structures, Semi-infinite stacks, Current source in a cavity, Modelling optical devices
+@section 1D planar structures
+
+@cindex planar structures
+
+The following Python code shows how to model a purely 1D Bragg stack, where
+all the layers extend infinitely in the transverse direction.
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# planar 1D DBR
+#
+####################################################################
+
+from camfr import *
+
+# Define structure.
+
+set_lambda(1)
+
+GaAs_m = Material(3.5)
+AlAs_m = Material(2.9)
+
+GaAs = Planar(GaAs_m)
+AlAs = Planar(AlAs_m)
+
+d_GaAs = get_lambda()/4./GaAs_m.n().real
+d_AlAs = get_lambda()/4./AlAs_m.n().real
+
+s = Stack(GaAs(0) + 10*(GaAs(d_GaAs) + AlAs(d_AlAs)) + GaAs(0))
+@end group
+@group
+
+# Loop over incidence angles.
+
+for theta in arange(0, 90, 0.5):
+
+  GaAs.set_theta(theta * pi / 180.)
+  print theta,
+  
+  set_polarisation(TE)
+  s.calc()
+  print abs(s.R12(0,0))**2 ,
+
+  set_polarisation(TM)
+  s.calc()
+  print abs(s.R12(0,0))**2
+@end group
+@end example
+
+@code{Planar} takes a material as argument to create an infinitely extended
+planar layer, which can be used in @code{Stack} to create a layered 1D 
+structure.
+
+The stack is calculated for one angle at a time, which can be set in radians 
+using @code{set_theta} on a given material. Note that you should set the wavelength before setting the angle, as @code{set_theta} effectively sets the transverse part of the wavevector, which is dependent on the wavelength.
+
+Because only one mode (or plane wave in this case) is needed at any time for 
+a calculation, the reflection and transmission matrices have only one element.
+
+@page
+
+@node Semi-infinite stacks, Defining complicated structures, 1D planar structures, Modelling optical devices
+@section Semi-infinite stacks
+
+@cindex semi-infinite stacks, @code{InfStack}
+
+Say you wanted to model the incoupling from a dielectric waveguide to a 
+photonic crystal waveguide (fig. 2.4). 
+
+@image{figs/infstack}
+
+Using other modelling tools, you would have to study a finite structure, i.e. 
+at some point you would have to terminate the photonic crystal and introduce a
+photonic crystal/air interface. Reflections from this interface could travel 
+back to the dielectric waveguide and disturb the simulation results due to the
+Fabry-Perot effect.
+
+In CAMFR we can solve this problem by using an @code{InfStack}, which allows 
+us to model the structure of fig. 2.4 where the crystal extends all the way
+towards infinity in the propagation direction. In this way, we can study the
+incoupling problem in isolation of edge effects from the other side of the
+crystal.
+
+The following code illustrates how to achieve this:
+
+@example
+@group
+#! /usr/bin/env python
+
+###################################################################
+#
+# A semi-infinite photonic crystal.
+#
+###################################################################
+
+from camfr import *
+
+set_lambda(1.5)
+set_N(50)
+
+# Set geometry parameters
+
+GaAs = Material(3.4)
+air  = Material(1.0)
+  
+a = .600     # period
+r = .150/2.0 # rod radius
+
+set_lower_wall(slab_H_wall)
+
+cl = 0       # air cladding
+periods = 4  # lateral periods
+@end group
+@group
+
+# Define slabs.
+
+inc_wg = Slab(GaAs(1.5*r) + air(a-2.5*r+periods*a+cl))
+
+no_rods = Slab(air(a-r+periods*a+cl))
+ 
+cen = Slab(  air(a-r)                                               \
+           + periods*(GaAs(2*r) + air(a-2*r))                       \
+           + air(cl) )
+
+# Calculate semi-infinite stack.
+
+s_inf = InfStack(cen(2*r) + no_rods(a-2*r))
+s = Stack(inc_wg(a) + s_inf)
+
+s.calc()
+
+print abs(s.R12(0,0))**2
+@end group
+@end example
+
+If you are only interested in the reflection coefficient of the fundamental 
+mode of the incoupling waveguide, this works fine. However, when using 
+@code{InfStack}, the transmission to the Bloch modes of the semi-infinite 
+stack is not calculated to save time.
+
+If you are interested in these quantanties, you have to make some small 
+modifications:
+
+@example
+@group
+
+s_inf = BlochStack(cen(2*r) + no_rods(a-2*r))
+s = Stack(inc_wg(a) + s_inf(0))
+
+@end group
+@end example
+
+When you are using a @code{BlochStack} instead of an @code{InfStack}, all the
+scattering matrices are calculated. Moreover, @code{s.T12(0,0)} refers to the
+transmission to the Bloch mode of the semi-infinite stack, rather than to the
+transmission to some waveguide mode of one of the slabs making up the 
+semi-infinite structure, which is usually not of interest.
+
+Note that @code{BlochStack} can be used in the beginning of a @code{Stack} too.
+
+@page
+
+@node Defining complicated structures, General excitations for slabs, Semi-infinite stacks, Modelling optical devices
+@section Defining complicated structures
+
+@cindex complicated structures, @code{geometry}
+
+CAMFR has a facility which makes it easier to define complicated non-trivial
+structures. Rather than manually specifying the geometry slice by slice, we
+can define a 2D structure in terms of higher level geometric shapes, like
+circles, triangles or rectangles. This definition can then be automatically
+discretised and converted to an expression which can be used to initialise
+a stack.
+
+To illustrate this, we model the structure from Fig. 2.5.
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Illustrates how to define complicated structures using Geometry.
+#
+####################################################################
+
+from camfr import *
+
+set_lambda(1)
+set_N(40)
+
+air = Material(1)
+mat = Material(3)
+
+g = Geometry(air)
+
+g += Rectangle(Point(0.0,-0.5), Point(2.0, 0.5), mat)
+g += Triangle (Point(2.0, 0.5), Point(2.0,-0.5), Point(3.0, 0.0), mat)
+g += Circle   (Point(4.5, 0.0), 0.5, mat)
+@end group
+@group
+
+set_lower_PML(-0.1)
+set_upper_PML(-0.1)
+
+prop0,  prop1,  d_prop  =  0.0, 5.0, 0.50
+trans0, trans1, d_trans = -2.5, 2.5, 0.01
+
+exp = g.to_expression(prop0,  prop1,  d_prop,
+                      trans0, trans1, d_trans)
+
+s = Stack(exp)
+
+s.calc()
+
+print s.R12(0,0)
+@end group
+@end example
+
+@image{figs/discretise}
+
+The command @code{g = Geometry(air)} creates a @code{Geometry} object with 
+air as background material. We can subsequently add shapes to this object,
+e.g. @code{g += Rectangle(Point(0.0,-0.5), Point(2.0, 0.5), mat)} adds a
+rectangle consisting of material @code{mat} with given lower left and 
+top right vertices. Note that the first coordinate refers the propagation
+direction (horizontal in the case of Fig. 2.5).
+
+Other shapes we can add are @code{Circle}, @code{Triangle} or @code{Square}.
+If two shapes overlap, the shape that was added last takes precedence.
+
+Finally, we can convert the geometry object to an expression which can be
+used to create a stack. The arguments to this @code{to_expression} function
+are the range and precision in both the propagation and transverse direction
+(see Fig 2.5).
+
+The increments @code{d_prop} and @code{d_trans} deserve some additional
+explanation, because they don't correspond to a uniform rectangular grid. The
+way the discretisation in performed is as follows. First, the structure is
+split up into a number of slices in the propagation direction, each 
+@code{d_prop} long. Then, subsequent slices are combined if the material
+discontinuities in the transverse direction are no more than @code{d_trans}
+apart.. This creates some kind of dynamic resolution, because in regions 
+where the shapes vary slower, we will have fewer (but thicker) slices. 
+Also, it makes sure that subsequent identical slices are always combined 
+into one slab. All of this makes for a more efficient discretisation than
+a traditional uniform grid.
+
+Finally, we want to point out that it's quite easy for the user to add 
+custom shapes by defining a Python object which overloads 
+@code{intersection_at_x}. See @code{camfr/geometry.py} for more details.
+
+@page
+
+@node General excitations for slabs, Dispersive materials, Defining complicated structures, Modelling optical devices
+@section General excitations for slabs
+
+@cindex general excitations, gaussian incidence, plane wave incidence
+
+So far, we've mostly excited the structure with a single mode, often the
+fundamental one. However, by taking the right linear combination of modes,
+we can approximate any arbitrary incident field shape, like a gaussian or a
+plane wave.
+
+To make this easier for the case of cartesian waveguides, CAMFR provides 
+a number of variants to @code{Stack.set_incident_field}, which are 
+illustrated in the following piece of code:
+
+@example
+@group
+#! /usr/bin/env python
+
+###################################################################
+#
+# Illustrates different excitations for cartesian stacks.
+#
+###################################################################
+
+from camfr import *
+
+set_N(50)
+set_lambda(1.55)
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+
+set_lower_PML(-0.1)
+set_upper_PML(-0.1)
+
+slab = Slab(air(2)+ GaAs(1)+ air(2))
+s = Stack(slab(1))
+
+eps = 1e-3 # Precision for calculating overlap integrals.
+@end group
+@group
+
+# General excitation using a Python function.
+
+A     = 1.0
+x0    = slab.width()/2.
+sigma = 0.5
+
+def f(x):
+  return A*exp(-0.5*((x-x0)/sigma)**2)
+
+s.set_inc_field_function(f, eps)
+@end group
+@group
+
+# Faster variant using a built-in Gaussian excitation.
+
+s.set_inc_field_gaussian(A, sigma, x0, eps)
+
+# Plane wave with amplitude A and angle theta (radians).
+
+A = 1.0
+theta = 0.0
+s.set_inc_field_plane_wave(A, theta, eps)
+@end group
+@end example
+
+First, we define a Python function @code{f}, which describes a Gaussian. This
+field profile is then used as an excitation by calling 
+@code{s.set_inc_field_function(f, eps)}, where @code{eps} is the precision with
+which the overlap integrals are calculated. @code{f} describes the @code{Ey} 
+field in the case of TE polarisation and the @code{Hy} field for TM.
+
+By using Python's @code{lambda} expressions, this code could also have been
+written as
+
+@example
+s.set_inc_field_function(lambda x : exp(-0.5*((x-2.5)/0.5)**2), eps)
+@end example
+
+This is slightly faster, because Python doesn't have to reference the global
+variables @code{A}, @code{x0} and @code{sigma}.
+
+For even greater speed, there exists a predefined Gaussian excitation:
+
+@example
+s.set_inc_field_gaussian(A, sigma, x0, eps)
+@end example
+
+Finally, there is also a predefined excitation for a plane wave with amplitude @code{A} making an angle @code{theta} (in radians) with the propagation direction:
+
+@example
+s.set_inc_field_plane_wave(A, theta, eps)
+@end example
+
+The accuracy which can be achieved to represent an arbitrary field is of course
+dependent on the number of modes used. Similarly, Gibbs phenomena can occur 
+when modelling discontinuous functions, just like e.g. in Fourier analysis.
+
+
+@page
+
+@node Dispersive materials, planar LEDs, General excitations for slabs, Modelling optical devices
+@section Working with dispersive materials
+
+@cindex materials, dispersive
+@cindex dispersive materials
+
+Since CAMFR is a frequency domain method, working with dispersive materials is in a sense trivial: just do a different simulation for each wavelength with adjusted material parameters.
+
+There are however a few convenience functions to help you work with materials whose refractive index is specified in an external file. A popular format among material scientists is a text file consisting of three columns: the wavelength in nm, the real part of the index, the imaginary part of the index where a positive value means loss. The following code shows how to use such a file, automatically adapting it to the CAMFR conventions (i.e. wavelength in micron and loss corresponding to a negative imaginary index):
+
+@example
+@group
+SiO2_factory = Dispersive_Material_Factory('SiO2.txt')
+
+for wavelength in arange(1,2,0.1):
+  set_lambda(wavelength)
+  m = SiO2_factory()
+  print m()
+@end group
+@end example
+
+This assumes that a file @code{SiO2.txt} is present in your current location. Note how you first need to set the wavelength, and then let the factory object create a new material object for you to use in the rest of your calculations. Changing the wavelength after the structure is created will NOT change the refractive index.
+
+In case your refractive index data is tabulated in a different way, have a look at @code{material.py} in the CAMFR source code at the implementation of @code{Dispersive_Material_Factory} to see how to adapt it.
+
+Sometimes, the refractive index is given by a formula. In this case, you can write your own factory object like this:
+
+@example
+@group
+class ZnS_Factory:
+
+  def __call__(self):
+
+    eps = 5.164 + 0.1208 / (get_lambda().real **2 - 0.27055**2)
+    return Material(sqrt(eps))
+@end group
+@end example
+
+
+@page
+
+@node planar LEDs, LEDs with gratings, Dispersive materials, Modelling optical devices
+@section Modelling light emission in planar LEDs
+
+@cindex LEDs
+
+There is an extra set of functions written on top of CAMFR which allows you
+to study spontaneous emission and light extraction in planar stratified resonant cavity light emitting diodes. The sponteneous emission is modelled as a dipole source with a certain orientation which is then expanded in plane waves.
+
+These functions can be imported by @code{from RCLED import *}. An example of using this module is given by the following code (available as @code{OLED.py} in the @code{examples/other} directory): 
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Extraction efficiency in an organic LED
+#
+####################################################################
+
+from RCLED import *
+
+# Set parameters.
+
+set_lambda(0.565)
+@end group
+@group
+# Create materials.
+  
+Al    = Material(1.031-6.861j)
+Alq3  = Material(1.655)
+NPD   = Material(1.807)
+ITO   = Material(1.806-0.012j)
+glass = Material(1.528)
+air   = Material(1)
+@end group
+@group
+# Define layer structure.
+
+top = Uniform(Alq3,  0.050) + \
+      Uniform(Al,    0.150) + \
+      Uniform(air,   0.000)
+
+bot = Uniform(Alq3,  0.010) + \
+      Uniform(NPD,   0.045) + \
+      Uniform(ITO,   0.050) + \
+      Uniform(glass, 0.000)
+
+sub = Uniform(glass, 0.000) + \
+      Uniform(air,   0.000)
+
+ref = Uniform(10)
+
+cav = RCLED(top, bot, sub, ref)
+
+@end group
+@group
+# Calculate.
+
+cav.calc()
+
+cav.radiation_profile(horizontal)
+
+@end group
+@end example
+
+This defines a structure where the sequence of layers from top to bottom is air, 150 nm Al, 60 nm Alq3 with the dipole 50 nm from the Al, 45 nm NPD, 50 nm ITO, an optically thick glass substrate and finally air below.
+
+Just as in other cavity calculations, the @code{top} and @code{bot} stacks are defined from the inside out, i.e. from the location of the emitter (in this case the Alq3 layer) to the outside world.
+
+@code{Uniform} is a convenience function of the @code{RCLED} module, which relieves the user of having to create the @code{Planar} objects (@xref{1D planar structures}).
+
+The distinction between the @code{bot} and @code{sub} stacks is needed because the substrate is considered to be optically thick, in the sense that reflections from the substrate-air interface do not contribute to the microcavity effect. In this way, it is also possible to separately calculate how much light is coupled into the glass substrate and how much is coupled into the air, which is sometimes useful information. Note that in order to calculate the extraction to air, the correct Fresnel coefficients for the substrate-air interface are taken into account.
+
+The @code{ref} stack also deserves additional explanation. For numerical reasons, the emission is actually taking place in a zero-thickness reference layer which in this example is set to have an index of 10. The index of the reference layer is particularly important when the dipole emits close to a metal layer and you want to model the coupling to surface plasmons accurately. In this case, you might want to experiment with the reference index to make sure it is high enough.
+
+The @code{cav.calc()} command prints out the following summary of where the light goes for different dipole orientations:
+
+@example
+@group
+Source orientation: vertical (weight=1)
+Emitted power                                 : 2.393
+Extraction efficiency to substrate            : 0.094
+Extraction efficiency to bottom outside world : 0.009
+
+@end group
+@group
+Source orientation: horizontal (weight=2)
+Emitted power                                 : 0.909
+Extraction efficiency to substrate            : 0.758
+Extraction efficiency to bottom outside world : 0.312
+
+@end group
+@group
+Source orientation: average
+Emitted power                                 : 1.404
+Extraction efficiency to substrate            : 0.380
+Extraction efficiency to bottom outside world : 0.139
+@end group
+@end example
+
+The vertical dipole is oriented perpendicular to the layer interfaces, and the horizontal one has random azimuth in the plane of the layers. Also note that the convention we adopt here is that the useful emission is in the bottom direction. If your device is actually top emitting, you have to invert the layer stack.
+
+If you want to do some post-processing on these numbers, or plug them in an optimisation routine, the function @code{cav.calc()} actually returns a data structure which can be used to access these numbers. E.g., the following code will print out the same sequence of nine numbers as above:
+
+@example
+@group
+res=cav.calc()
+@end group
+@group
+
+print res[vertical].P_source
+print res[vertical].eta_sub
+print res[vertical].eta_out
+@end group
+@group
+
+print res[horizontal].P_source
+print res[horizontal].eta_sub
+print res[horizontal].eta_out
+@end group
+@group
+
+print res.P_source
+print res.eta_sub
+print res.eta_out
+@end group
+@end example
+
+If you are only interested in e.g. the horizontal dipole, you can specify this in the code as follows: @code{cav.calc(sources=[horizontal])}. (By default, the following calculation is performed: @code{calc(sources = [vertical,horizontal], weights = [1,2]}, indicating that the horizontal dipole needs to be counted twice to get the correct average over source orientation.)
+
+Finally, the command @code{cav.radiation_profile(horizontal)} will plot the TE and the TM radiation profile of a horizontal dipole. To look at the radiation profile of a vertical dipole, simply replace @code{horizontal} by @code{vertical}.
+
+To do your own post-processing, the function returns the following values:
+
+@example
+theta, P_TE, P_TM = cav.radiation_profile(horizontal)
+@end example 
+
+By default, the @code{radiation_profile} command plots the radiation profile in the bottom output medium, in the case of our example air. To look at the field in other locations, there is an optional function argument @code{location}, which can be any of the following strings:  @code{'source_top'} or @code{'source_bot'} (to look at the upward and downward radition profile at the dipole location),  @code{'top'} (in the top output medium, in this case above the metal),  @code{'sub'} (in the substrate, in this case glass) and @code{'out'} (the default value). Note that the angles always refer to angles in the particular layer indicated by the @code{location} parameter, e.g. for @code{'sub'} the angles are angles in the glass substrate.
+
+The values which are plotted by the function are densities per unit solid angle, i.e. the total power is given by the integral of the @code{P} values times an infinitesimal solid angle. For densities per other units, use the following optional argument: @code{density='per_kt'} or @code{density='per_kx_ky'}.
+
+To turn off the interactive plotting (e.g. for use in batch calculations) use the optional argument @code{show = False}. To write the figures to files, specify the base filename by the optional argument @code{filename='my_file_name'}, which will create @code{my_file_name_TE.png} and @code{my_file_name_TM.png}.
+
+
+@page
+
+@node LEDs with gratings, CAMFR 3D, planar LEDs, Modelling optical devices
+@section Modelling light emission in LEDs with gratings
+
+@cindex LEDs with gratings
+@cindex gratings in LEDs
+
+The presence of a grating (or a photonic crystal if you prefer), can have a big influence on optical outcoupling. Therefore, CAMFR also contains a library @code{GARCLED} for modelling these kinds of grating-assisted resonant-cavity LEDs. The gratings can be placed at the interface between the cavity and the substrate, and/or at the interface between the substrate and the air. Multiple incoherent reflections in the optically thick substrate can also be taken into account.
+
+The following is a simple example:
+
+@example
+@group
+#!/usr/bin/env python
+
+####################################################################
+#
+# Extraction efficiency in an organic LED with gratings
+#
+####################################################################
+
+from GARCLED import *
+
+# Set parameters.
+  
+set_lambda(0.565)
+
+orders = 2
+set_fourier_orders(orders,orders)
+
+L = 0.400
+set_period(L, L)
+@end group
+@group
+
+# Create materials.
+  
+Al    = Material(1.031-6.861j)
+Alq3  = Material(1.655)
+NPD   = Material(1.807)
+SiO2  = Material(1.48)
+SiN   = Material(1.95) 
+ITO   = Material(1.806-0.012j)
+glass = Material(1.528)
+air   = Material(1)
+@end group
+@group
+
+# Define layer structure.
+ 
+top = Uniform(Alq3,  0.050) + \
+      Uniform(Al,    0.150) + \
+      Uniform(air,   0.000)
+  
+bot = Uniform(Alq3,  0.010) + \
+      Uniform(NPD,   0.045) + \
+      Uniform(ITO,   0.050) + \
+      SquareGrating(L/4, SiO2, SiN, "1", 0.100) + \
+      Uniform(glass, 0.000)
+  
+sub = Uniform(glass, 0.000) + \
+      Uniform(air,   0.000)
+
+ref = Uniform(3) # Don't choose too high: otherwise takes too long
+
+cav = RCLED(top, bot, sub, ref)
+@end group
+@group
+
+# Calculate.
+  
+cav.calc(sources=[vertical, horizontal_x], weights=[1, 2],
+         steps=30, symmetric=True)
+
+cav.radiation_profile(horizontal_x, steps=30)
+@end group
+@end example
+
+The main structure of the code should look very similar as compared to the planar case from the previous section.
+
+The command @code{set_period(Lx,Ly)} allows you to set the period in the x and y transverse directions.  @code{set_fourier_orders(Nx,Ny)} sets the number of diffraction orders that are taken into account when simulating the grating with the rigorous coupled wave analysis model (RCWA). This number has a big influence on the calculation time.
+
+Also for reasons of calculation time, the index of the reference material should not be excessively high (but at least as high as the index of the material where the emission takes place).
+
+@code{SquareGrating(D, square_m, surround_m, pos, thickness)} is a convenience function to create a square grating of squares of material @code{square_m} in a background material @code{surround_m}. The side of the squares has length @code{D} and the period of the grating has already been set by @code{set_period(Lx,Ly)}. The thickness or height of the grating layer is given by the @code{thickness} parameter. The position of the emitting dipole with respect the grating pattern has an influence on the radiation profile. With the @code{pos} argument you can specify three different high-symmetry positions @code{'1'}, @code{'2'} and @code{'3'}. These are illustrated in the following figure.
+
+@image{figs/dipole_pos}
+
+For this particular example, the extraction efficiency for the @code{horizontal_x} and @code{horizontal_y} dipoles will be the same due to symmetry. Therefore, we only calculate the @code{horizontal_x} dipole, but give it a weight coefficient of two, so that the average over dipole orientation gives the correct result.
+
+The @code{steps} parameter determines in how many equidistant steps the basic integration interval along one @code{k}-axis is subdivided. Together with  @code{set_fourier_orders(Nx,Ny)}, these are the main parameters that determine accuracy and calculation time.
+
+@code{symmetric=True} tells the software that the grating together with the dipole orientation possess mirror symmetry along the @code{x} and @code{y} axis. This allows the integration to be restricted to positive values of @code{kx} and @code{ky}, resulting in a factor 4 speedup.
+
+@code{cav.calc()} also returns an object containing all the results, which can be queried in exactly the same way as for the planar case. 
+
+Finally, @code{cav.radiation_profile(horizontal_x, steps=30)} calculates the TE and TM polarised radiation profile for a single source orientation. This functions in exactly the same way as in the planar case, e.g. it also supports the same optional arguments: @code{radiation_profile(source, steps=30, location='out', density='per_solid_angle', show=True, filename=None)}. The return values of this function are similarly @code{k, P_TE, P_TM}, where @code{k} is a 1D vector containing the k-values which are used both for kx and ky. @code{P_TE} and @code{P_TM} are matrices.
+
+There is also a function to create a square grating with round holes: @code{SquareGratingRoundHoles(D, dx, dy, core_m, surround_m, pos, thickness)}. Here, @code{dx} and @code{dy} are the same discretisation parameters used for @code{Geometry} (@xref{Defining complicated structures}).
+
+To show how you can manually create different unit cells which are not covered by the convenience functions, we will now explain the code behind the @code{SquareGrating} at position 1. As shown in the following figure, the unit cell is built up from three vertical slices, which are represented in the following code by the @code{Slab}s @code{s1}, @code{s2} and @code{s1}. These are then combined in a @code{BlochSection}.
+
+@image{figs/pos1}
+
+@example
+@group
+s1 = Slab(square_m(D/2.) + surround_m(_Ly-D) + square_m(D/2.))
+s2 = Slab(surround_m(_Ly))  
+  
+grating = BlochSection(s1(D/2.) + s2(_Lx-D) + s1(D/2.))
+@end group
+@end example
+
+To use this @code{grating} object in your stack definition, just do the following:
+
+@example
+@group
+bot = Uniform(Alq3,  0.010) + \
+      Uniform(NPD,   0.045) + \
+      Uniform(ITO,   0.050) + \
+      grating(0.010) + \
+      Uniform(glass, 0.000)
+@end group
+@end example
+              
+In reality, the dipole position will be random with respect to the grating. The following code illustrates a more elaborate example, where the emission is averaged over the three high-symmetry dipole positions. Also, the structure is calculated for several grating parameters.
+
+@example
+@group
+#!/usr/bin/env python
+
+######################################################################
+#
+# Extraction efficiency in an organic LED with gratings
+# averaged over dipole position.
+#
+######################################################################
+
+from GARCLED import *
+
+def calc(L, h, D, orders, wavelength=0.565):
+
+  # Set parameters.
+
+  set_period(L, L)
+  
+  set_lambda(wavelength)
+
+  set_fourier_orders(orders, orders)
+
+  print
+  print "wavelength, orders L h:", wavelength, orders, L, h
+
+  # Create materials.
+  
+  Al    = Material(1.031-6.861j)
+  Alq3  = Material(1.655)
+  NPD   = Material(1.807)
+  ITO   = Material(1.806-0.012j)
+  SiO2  = Material(1.48)
+  SiN   = Material(1.95)  
+  glass = Material(1.528)
+  air   = Material(1)
+
+  eta_sub, eta_out = [], []
+@end group
+@group
+
+  # Define layer structure.
+
+  for pos in ['1', '2', '3']:
+
+    print
+    print "*** Position", pos, "***"
+    print
+  
+    top = Uniform(Alq3,  0.050) + \
+          Uniform(Al,    0.150) + \
+          Uniform(air,   0.000)
+  
+    bot = Uniform(Alq3,  0.010) + \
+          Uniform(NPD,   0.045) + \
+          Uniform(ITO,   0.050) + \
+          SquareGrating(D, SiO2, SiN, pos, h) + \
+          Uniform(glass, 0.000)
+  
+    sub = Uniform(glass, 0.000) + \
+          Uniform(air,   0.000)
+
+    ref = Uniform(3) # Don't choose too high: otherwise takes too long
+  
+    cav = RCLED(top, bot, sub, ref)
+@end group
+@group
+
+    # Calculate average over source orientation for a given position.
+     
+    res = cav.calc(sources = [vertical, horizontal_x, horizontal_y],
+                   steps=100, symmetric=True)
+
+    eta_sub.append(res.eta_sub)
+    eta_out.append(res.eta_out)
+      
+    sys.stdout.flush()
+  
+    free_tmps()
+@end group
+@group
+
+  # Print average over position and source.
+
+  print
+  print "*** Averaged over dipole position and source orientation ***"
+  print
+  print "Averaged extraction efficiency to substrate            :", \
+                                                        average(eta_sub)
+  print "Averaged extraction efficiency to bottom outside world :", \
+                                                        average(eta_out)
+
+@end group
+@group
+# Loop over period and thickness of the grating.
+
+for L in [.300, .500, .700]:
+  for h in [.100, .200, .400]:
+    calc(L, h, L/2, orders=3)
+@end group
+@end example  
+
+A grating close to the light emitting layer will have an influence on the extraction of the light trapped inside the active layers. However, as the figure below illustrates, this grating can also help to couple out light trapped inside the substrate, provided the lateral extent of the device is sufficienly large.
+
+@image{figs/cavity_grating}
+
+These multipass effects in the substrate happen incoherently because of the large thickness of the substrate. Normally, they are not taken into account, i.e. the substrate is considered to be single-pass. You can calculate the multipass effects by specifying the optional parameter @code{single_pass_substrate=False} to @code{cav.calc()}.
+
+Finally, instead of placing the grating at the cavity-substrate interface, you can place it at the substrate-air interface by including a grating in the @code{sub} stack. In this case, the grating will only have an influence on the substrate modes, and you need to specify @code{single_pass_substrate=False}.
+
+
+
+@page
+
+@node CAMFR 3D, Low level field plotting, LEDs with gratings, Modelling optical devices
+@section CAMFR 3D
+
+@cindex three-dimensional structures
+
+The following pages illustrate how to use CAMFR to find modes of waveguides with an arbitrary 2D cross-section. These 2D waveguides can subsequently be stacked together in @code{Stack}, @code{BlochStack}, or @code{Cavity} objects. Since this code is still in development, some of the things mentioned here are subject to change.
+
+The following code looks for the ground mode of a (quarter) of a square waveguide, exploiting symmetry:
+@example
+@group
+from camfr import *
+
+set_lambda(1.0)
+set_N(1)
+
+core = Material(1.5)
+clad = Material(1.0)
+
+set_section_solver(L)
+set_mode_correction(full)
+
+set_left_wall(H_wall)
+set_right_wall(H_wall)
+set_right_PML(-0.05)
+
+set_lower_wall(slab_E_wall)
+set_upper_wall(slab_E_wall)
+set_upper_PML(-0.05)
+
+wg = Slab(core(0.25) + clad(1))
+air = Slab(clad(wg.width()))
+        
+all = wg(0.25) + air(1)
+
+s = Section(all, 10, 40)
+s.calc()
+
+print s
+@end group
+@end example
+
+In order to explain all the options, some insight into the nature of the 3D model is needed.
+
+As a first step of the model, a coarse estimate of all the modes of a @code{Section} (a waveguide with a 2D cross section) is created using a plane-wave model. In a second step, these estimates (or a subset of them) are refined using an expansion based on modes of the 1D waveguides making up the @code{Section}. Since these can better satisfy the boundary conditions, more accurate results can be obtained.
+
+The line @code{s = Section(all, 10, 40)} means we use (2*10+1)^2 plane waves in the first stage, and refine it using 40 1D modes in each Slab during the second stage. @code{all} can be any 2D stack, including those fabricated with the @code{Geometry} function. Note: currently the 100 is a rough estimate: the software will print out how many modes were actually used.
+
+The user has the option of choosing which modes get refined during the second stage: 
+
+@itemize @bullet
+@item @code{set_mode_correction(full)}: all modes.
+@item @code{set_mode_correction(guided_only)}: only guided modes
+@item @code{set_mode_correction(snap)}: don't refine any modes, but set numerical noise on the imaginary part of @code{kz} for guided modes to zero (obsolete)..
+@item @code{set_mode_correction(none)}: don't refine any modes (default).
+@end itemize
+
+When you're only interested in the modes of a @code{Section}, and not putting @code{Section}s together is a @code{Stack}, @code{set_mode_correction(full)} is the way to go, as it is more accurate. For a full 3D model with different  @code{Section}s however, such an approach can be very time-consuming, especially in the calculation of the overlap integrals, which are much quicker in a plane wave basis. In that case, it's better to use @code{guided_only} or @code{none}. @code{none} is the fastest, but can sometimes require a lot of plane waves to get accurate results. @code{guided_only} is a hybrid approach, which is more accurate, but can sometimes miss a mode. When using @code{guided_only}, it's adviseable to use @code{set_orthogonal(False)} as well, as using a mixture of two expansion sets somewhat distorts the mode orthogonality.
+
+Some loose remarks:
+
+@itemize @bullet
+@item If you have estimates on the location of the modes, e.g. from a previous simulation for a slightly different structure, you can skip stage 1 and use user-provided estimates instead: @code{s.set_estimate(n_eff1)}, @code{s.set_estimate(n_eff2)}, ... .
+@item When you're only interested in the fundamental mode, it's tempting to use @code{set_N(1)}. However, sometimes this yields a higher-order mode, because the noise on the coarse estimate during stage 1 can be such that the order of mode 0 and mode 1 gets swapped. One option is to use more palne waves, but often it works just as well to increase the value of @code{set_N()}. Taking more estimates to stage 2 will improve the chances of finding all modes you are interested in.
+@end itemize
+
+Some interface quirks which are due to the development nature of the model and will probably change in the final version :
+@itemize @bullet
+@item For left and right walls, the syntax is @code{E_wall} and @code{H_wall}, while for upper and lower walls it's @code{slab_E_wall} and @code{slab_H_wall}. For the left and right side, you can also use @code{no_wall}, which is e.g. very accurately to study leakage losses provided you don't use PML.
+@item For the @code{NT} and @code{Li} solver, currently opposite walls have to be of the same type (i.e. no electric wall on the left with a magnetic wall on the right).
+ 
+@end itemize
+
+
+@page
+
+@node Low level field plotting, Tips for troubleshooting problems, CAMFR 3D, Modelling optical devices
+@section Low level field plotting
+
+@cindex field plotting
+
+In you want more control over the field plotting than is provided by the @code{plot} widgets, you can use a set of lower level plotting functions:
+
+@example
+@group
+####################################################################
+#
+# Illustrates low level plotting.
+#
+####################################################################
+
+from camfr import *
+
+set_N(40)
+set_lambda(1.55)
+
+# Define materials.
+
+GaAs = Material(3.5)
+air  = Material(1.0)
+@end group
+@group
+
+# Define geometry.
+
+set_lower_PML(-0.1)
+set_upper_PML(-0.1)
+
+wg  = Slab(air(2.0) + GaAs(0.2) + air(2.0))
+gap = Slab(air(4.2))
+
+s = Stack(wg(0) + gap(1) + wg(0))
+
+inc = zeros(N())
+inc[0] = 1
+s.set_inc_field(inc)
+
+s.calc()
+@end group
+@group
+
+# Do some plotting.
+
+r_x = arange( 1.5, 2.8, 0.05)
+r_z = arange(-1.0, 2.0, 0.05)
+
+print "Doing some plots. Close window to continue to the next one."
+
+wg.plot_n(r_x)
+
+wg.mode(0).plot_field(lambda f : f.E2().real, r_x)
+
+s.plot_field(lambda f : f.E2().real, r_x, r_z)
+
+s.animate_field(lambda f : f.E2(), r_x, r_z)
+
+@end group
+@end example
+
+This code is pretty self-explanatory. Ranges are used to specify the area to be plotted and the resolutions.
+
+Note the use of Python's lambda functions to indicate which field component to
+plot. Lambda functions are little anonymous functions which in this case will 
+be called on a @code{Field} object. This greatly increases the flexibility of 
+the @code{plot_field} function: e.g. to plot the absolute value one would 
+write @code{lambda f : abs(f.E2()**2)}.
+
+In all these plots, you can zoom by dragging a rectangle in the window. 
+Also, left clicking and dragging under the horizontal axis will print the
+corresponding coordinates. Note that these functions are also very handy in
+interactive mode, to quickly inspect modes and their field profiles.
+
+Important to note is that @code{animate_field} requires a complex number to
+work correctly, so the full complex field component needs to be used rather
+than e.g. the real part.
+
+@code{plot_n}, @code{plot_field} and @code{animate_field} can take an additional named argument like @code{filename="out.gif"} which indicates the filename to write the picture to. For pictures, a variety of formats are supported (gif, jpg, png, eps, ...), where the suffix of the filename will determine the format to be used. For animations only uncompressed animated gif is supported.
+
+Note that these plotting functions also work for @code{BlochStack}, @code{BlochMode} and @code{Cavity}.
+
+For additional functionality of these functions, see the reference guide.
+
+@page
+
+@node Tips for troubleshooting problems,  , Low level field plotting, Modelling optical devices
+@section Tips for troubleshooting problems
+
+@cindex convergence problems, troubleshooting, core dump, crash
+
+When CAMFR produces results that are clearly nonphysical, here are number
+of things you can do to improve convergence:
+
+@itemize @bullet
+@item
+If CAMFR is missing modes, increase the precision with @code{set_precision(p)},
+where p is an integer number that defaults to 100. If you expect missing 
+radiation modes, increase @code{set_precision_rad()} beyond the default of 100.
+@item
+Increase or decrease the absorption in the PML, the real distance between 
+the metal walls and the number of modes. Using too few modes will cause 
+convergence problems. A PML absorption that is too low will not damp out all
+parasitic reflections. On the other hand, if the absorption is excessively
+high, some modes can be missed. Increasing the real distance between the walls
+and lowering the PML absorption is a viable option in this case, but also
+requires that you use more modes. 
+@item
+If the PML absorption is high, try @code{set_chunk_tracing(0)} at the expense
+of longer run times.
+@item
+If there are problems due to inverting numerically unstable matrices, you
+can change the way these situations are handled. Use 
+@code{set_stability(extra)} to use extra row and column equilibration.
+With @code{set_stability(SVD)} a pseudo inverse is calculated using singular
+value decomposition.
+@item
+If your waveguides don't have multiple cores, try using 
+@code{set_degenerate(0)}.
+@item
+If the field profiles seem to be calculated incorrectly, try
+@code{set_orthogonal(0)}.
+This will cause CAMFR to treat modes which are not exactly orthogonal due to rounding errors as non-orthogonal.
+@item 
+If you are dealing with very lossy materials, using a different solver might help: @code{set_solver(series)} and @code{set_mode_surplus(n)}. This will first construct an initial estimate of the modes based on a plane wave expansion. The number of plane waves used in this expansion is @code{n} times @code{get_N()}. These estimates are subsequently refined using the full dispersion relation.
+@item
+For trouble with uncoupled waveguides, try experimenting with @code{set_unstable_exp_threshold}. E.g. setting it to 1e-6 will mean waveguides will be treated sooner as decoupled than when the parameter was 1e-12.
+@item
+If you're working with circular structures in the regime of backward and complex modes (e.g. when the metal wall is close to the last interface), you can use @code{set_backward_modes(1)} for extra stability.
+@end itemize
+
+If CAMFR crashes, make sure you haven't called @code{free_tmps()} too
+soon, i.e. before you're done with the objects. Another common cause of
+crashes to look out for is defining a @code{wall} or an @code{InfStack} inside
+an expression. Also, if you're upgrading from a pre 1.0 version of CAMFR, make
+sure all your coordinates are purely real.
+
+Finally, we want to remind the user that in Python @code{1/3 = 0} rather than
+@code{.3333}. This will change in Python 3.0, but if you already want such 
+behaviour now, include @code{from __future__ import division} at the top
+of your scripts.
+@page
+
+@node Reference guide, Index, Modelling optical devices, top
+@chapter Reference guide
+
+@noindent
+This chapter contains a listing all classes and functions contained in CAMFR.
+
+
+@menu
+* set_lambda::                  
+* get_lambda::                  
+* set_N::                       
+* N::                           
+* set_polarisation::            
+* set_gain_material::           
+* set_stability::               
+* set_precision::               
+* set_precision_rad::           
+* set_sweep_from_previous::     
+* set_chunk_tracing::           
+* set_degenerate::              
+* set_orthogonal::              
+* set_solver::                  
+* set_mode_surplus::            
+* set_unstable_exp_threshold::  
+* set_backward_modes::          
+* set_circ_order::              
+* set_circ_field_type::         
+* set_lower_PML::               
+* set_upper_PML::               
+* set_circ_PML::                
+* set_lower_wall::              
+* set_upper_wall::              
+* free_tmps::                   
+* Coord::                       
+* Field::                       
+* Material::                    
+* Waveguide::                   
+* Mode::                        
+* E_Wall::                      
+* H_Wall::                      
+* Expression::                  
+* Term::                        
+* Stack::                       
+* Cavity::                      
+* BlochStack::                  
+* BlochMode::                   
+* InfStack::                    
+* Geometry::                    
+* Circle::                      
+* Square::                      
+* Rectangle::                   
+* Triangle::                    
+* Planar::                      
+* Circ::                        
+* Slab::                        
+@end menu
+
+@node set_lambda, get_lambda, Reference guide, Reference guide
+@unnumberedsec @code{set_lambda}
+@cindex @code{set_lambda}
+
+@noindent
+@code{set_lambda(Real)}: sets the wavelength.
+
+@xref{get_lambda}.
+
+
+
+@node get_lambda, set_N, set_lambda, Reference guide
+@unnumberedsec @code{get_lambda}
+@cindex @code{get_lambda}
+
+@noindent
+@code{get_lambda()}: returns the wavelength.
+
+@noindent
+Note: this is the only CAMFR function which uses a @code{get_} suffix,
+as @code{lambda} is a reserved Python keyword.
+
+@noindent
+@xref{set_lambda}.
+
+
+
+@node set_N, N, get_lambda, Reference guide
+@unnumberedsec @code{set_N}
+@cindex @code{set_N}
+
+@noindent
+@code{set_N(int)}: sets the number of modes used in the series expansion.
+
+@noindent
+@xref{N}.
+
+
+
+@node N, set_polarisation, set_N, Reference guide
+@unnumberedsec @code{N}
+@cindex @code{N}
+
+@noindent
+@code{N()}: returns number of modes used in the series expansion.
+
+@noindent
+@xref{set_N}.
+
+
+
+@node set_polarisation, set_gain_material, N, Reference guide
+@unnumberedsec @code{set_polarisation}
+@cindex @code{set_polarisation}
+
+@noindent
+@code{set_polarisation(Pol)}: sets the polarisation. @code{Pol} can be
+either @code{TE} (default) or @code{TM}. Only relevant when the polarisations 
+are indeed decoupled, i.e. for 2D Cartesian structures and cylindrical ones 
+with Bessel order 0. Ignored otherwise.
+
+
+
+@node set_gain_material, set_stability, set_polarisation, Reference guide
+@unnumberedsec @code{set_gain_material}
+@cindex @code{set_gain_material}
+
+@noindent
+@code{set_gain_material(Material)}: sets the gain material, i.e. the material
+whose imaginary part of its refractive index will be adjusted to find a lasing
+mode in a @code{Cavity}.
+
+@noindent
+@xref{Cavity}.
+
+
+
+@node set_stability, set_precision, set_gain_material, Reference guide
+@unnumberedsec @code{set_stability}
+@cindex @code{set_stability}
+
+@noindent
+@code{set_stability(Stability)}: determines how to handle matrices that are
+close to singular (rare case). @code{Stability} can be either
+
+@itemize @bullet
+@item
+@code{normal}: default, no special measures
+@item
+@code{extra}: uses row and column equilibration
+@item
+@code{SVD}: uses singular value decomposition to calculate a pseudo inverse
+@end itemize
+
+
+
+@node set_precision, set_precision_rad, set_stability, Reference guide
+@unnumberedsec @code{set_precision}
+@cindex @code{set_precision}
+
+@noindent
+@code{set_precision(int)}: sets the precision used when scanning for guided
+modes (defaults to 100, higher values have less chances of missing modes, but
+are slower).
+
+@noindent
+@xref{set_precision_rad}
+
+
+
+@node set_precision_rad, set_sweep_from_previous, set_precision, Reference guide
+@unnumberedsec @code{set_precision_rad}
+@cindex @code{set_precision_rad}
+
+@noindent
+@code{set_precision_rad(int)}: sets the precision used when scanning for
+radiation modes (defaults to 100, higher values have less chances of missing 
+modes, but are slower).
+
+@noindent
+@xref{set_precision}.
+
+
+
+@node set_sweep_from_previous, set_chunk_tracing, set_precision_rad, Reference guide
+@unnumberedsec @code{set_sweep_from_previous}
+@cindex @code{set_sweep_from_previous}
+
+@noindent
+@code{set_sweep_from_previous(bool)}: determines whether or not previously
+calculated eigenmodes (e.g. for a slightly different wavelength) are used
+as a starting point for finding the new modes. Can speed up the procedure,
+but is sometimes less stable. Note: a Python bool is 1 for true, and 0 for
+false.
+
+
+
+@node set_chunk_tracing, set_degenerate, set_sweep_from_previous, Reference guide
+@unnumberedsec @code{set_chunk_tracing}
+@cindex @code{set_chunk_tracing}
+
+@noindent
+@code{set_chunk_tracing(bool)}: determines whether or not all modes are 
+located at the same time or in chunks. Defaults to true, which is faster but
+can sometimes lose modes, especially for high PML absorption. Note: a Python 
+bool is 1 for true, and 0 for false.
+
+
+
+@node set_degenerate, set_orthogonal, set_chunk_tracing, Reference guide
+@unnumberedsec @code{set_degenerate}
+@cindex @code{set_degenerate}
+
+@noindent
+@code{set_degenerate(bool)}: determines whether or not special precautions
+are taken to locate degenerate modes. This is generally a good idea and
+therefore this option defaults to true, but it can sometimes cause trouble.
+Note: a Python bool is 1 for true, and 0 for false.
+
+
+@node set_orthogonal, set_solver, set_degenerate, Reference guide
+@unnumberedsec @code{set_orthogonal}
+@cindex @code{set_orthogonal}
+
+@noindent
+@code{set_orthogonal(bool)}: sometimes modes that should be orthogonal are not
+exactly orthogonal due to rounding errors. Setting this option to false will
+treat these modes as non-orthogonal, and can sometimes drastically improve
+convergence. Note: a Python bool is 1 for true, and 0 for false.
+
+@node set_solver, set_mode_surplus, set_orthogonal, Reference guide
+@unnumberedsec @code{set_solver}
+@cindex @code{set_solver}
+
+@noindent
+@code{set_solver(series)}: activates a different solver to calculate the modes in a slab. It will first construct an estimate of the modes based on a plane wave expansion. These estimates will subsequently be refined using the full dispersion relation. This is especially useful for lossy structures. The number of plane waves used can be set through @code{set_mode_surplus()}.
+@xref{set_mode_surplus}.
+
+
+@node set_mode_surplus, set_unstable_exp_threshold, set_solver, Reference guide
+@unnumberedsec @code{set_mode_surplus}
+@cindex @code{set_mode_surplus}
+
+@noindent
+@code{set_mode_surplus(n)}: sets the number of plane waves used in the series expansion to @code{n*get_N()}. Only affects the series solver for Slabs.
+@xref{set_solver}.
+
+
+@node set_unstable_exp_threshold, set_backward_modes, set_mode_surplus, Reference guide
+@unnumberedsec @code{set_unstable_exp_threshold}
+@cindex @code{set_unstable_exp_threshold}
+
+@noindent
+@code{set_unstable_exp_threshold(eps)}: sets numerical parameter dealing with how soon waveguides will be treated as uncoupled. Setting this parameter to 1e-6 will result in a quicker decoupling as compared to e.g. 1e-12.
+
+@node set_backward_modes, set_circ_order, set_unstable_exp_threshold, Reference guide
+@unnumberedsec @code{set_backward_modes}
+@cindex @code{set_backward_modes}
+
+@noindent
+@code{set_backward_modes(1)}: use this for extra stability if you're working with circular structures in the regime of backward and complex modes (e.g. when the metal wall is close to the last interface). Involves a performance penalty, so it is off be default.
+
+@node set_circ_order, set_circ_field_type, set_backward_modes, Reference guide
+@unnumberedsec @code{set_circ_order}
+@cindex @code{set_circ_order}
+
+@noindent
+@code{set_circ_order(int)}: set the order of the Bessel modes and the
+angular dependence in cylindrical structures.
+
+
+
+@node set_circ_field_type, set_lower_PML, set_circ_order, Reference guide
+@unnumberedsec @code{set_circ_field_type}
+@cindex @code{set_circ_field_type}
+
+@noindent
+@code{set_circ_field_type(Fieldtype)}: determines which kind of angular
+field dependence is used when calculating field due to a current source.
+Can be either @code{cos_type} (default) or @code{sin_type}.
+
+
+
+@node set_lower_PML, set_upper_PML, set_circ_field_type, Reference guide
+@unnumberedsec @code{set_lower_PML}
+@cindex @code{set_lower_PML}
+
+@noindent
+@code{set_lower_PML(p)}: gives the lower cladding of all subsequently defined
+@code{Slab}s an imaginary thickness of @code{p*1j}, with @code{p} usually 
+negative for absorption. Implements PML boundary conditions. The lower 
+cladding is at @code{x=0}, at the first term in the expression to create a 
+@code{Slab}. By default, @code{p} is zero. Needs to be set BEFORE structures
+are defined.
+
+@noindent
+@xref{set_upper_PML}, @ref{set_circ_PML}.
+
+
+
+@node set_upper_PML, set_circ_PML, set_lower_PML, Reference guide
+@unnumberedsec @code{set_upper_PML}
+@cindex @code{set_upper_PML}
+
+@noindent
+@code{set_upper_PML(p)}: gives the upper cladding of all subsequently defined
+@code{Slab}s an imaginary thickness of @code{p*1j}, with @code{p} usually 
+negative for absorption. Implements PML boundary conditions. The upper 
+cladding is at  @code{x=slab.width()}, at the last term in the expression to 
+create a @code{Slab}. By default, @code{p} is zero. Needs to be set BEFORE 
+structures are defined.
+
+@noindent
+@xref{set_lower_PML}, @ref{set_circ_PML}.
+
+
+
+@node set_circ_PML, set_lower_wall, set_upper_PML, Reference guide
+@unnumberedsec @code{set_circ_PML}
+@cindex @code{set_circ_PML}
+
+@noindent
+@code{set_circ_PML(p)}: gives the cladding of all subsequently defined
+circular waveguides an imaginary thickness of @code{p*1j}, with @code{p} 
+usually negative for absorption. Implements PML boundary conditions. By 
+default, @code{p} is zero. Needs to be set BEFORE structures are defined. 
+
+@noindent
+@xref{set_lower_PML}, @ref{set_upper_PML}.
+
+
+
+@node set_lower_wall, set_upper_wall, set_circ_PML, Reference guide
+@unnumberedsec @code{set_lower_wall}
+@cindex @code{set_lower_wall}
+
+@noindent
+@code{set_lower_wall(SlabWall)}: sets the lower wall (i.e. at @code{x=0}) to
+the given wall. Has an effect on all @code{Slab}s  that are subsequently 
+defined.
+
+
+@noindent
+Note that walls can also be set on a slab-by-slab basis, 
+with @code{slab.set_lower_wall()}.
+
+@noindent
+@xref{set_upper_wall}.
+
+
+
+@node set_upper_wall, free_tmps, set_lower_wall, Reference guide
+@unnumberedsec @code{set_upper_wall}
+@cindex @code{set_upper_wall}
+
+@noindent
+@code{set_upper_wall(SlabWall)}: sets the upper wall (i.e. at
+@code{x = slab.width()}) to the given wall. Has an effect on all @code{Slab}s 
+that are subsequently defined.
+
+@noindent
+Note that walls can also be set on a slab-by-slab basis, 
+with @code{slab.set_upper_wall()}.
+
+@noindent
+@xref{set_lower_wall}.
+
+
+
+@node free_tmps, Coord, set_upper_wall, Reference guide
+@unnumberedsec @code{free_tmps}
+@cindex @code{free_tmps}
+
+@noindent
+@code{free_tmps()}: frees all the temporary scattering matrices that were
+calculated so far. Useful at the end of an inner loop, in order to save
+memory. 
+
+@noindent
+Drawback is that when the same structures are needed in a subsequent loop
+iteration, they have to be recalculated. Whether or not this is an issue
+depends on the actual simulation.
+
+
+
+@node Coord, Field, free_tmps, Reference guide
+@unnumberedsec @code{Coord}
+@cindex @code{Coord}
+
+@noindent
+A three-dimensional coordinate.
+
+@noindent
+Constructors: 
+
+@itemize @bullet
+@item
+@code{Coord(Complex c1,Complex c2,Complex z)}
+@item
+@code{
+Coord(Complex c1,Complex c2,Complex z, Limit c1_l, Limit c2_l, Limit z_l)}
+@end itemize
+
+@noindent
+@code{c1} and @code{c2} stand for @code{x} and @code{y} in Cartesian 
+coordinates, and for @code{rho} and @code{phi} in cylindrical coordinates.
+
+@noindent
+Optionally, @code{Limit} can be specified as either @code{Plus} or @code{Min},
+e.g. to indicated on which side of an index discontinuity the field has to be
+calculated.
+
+
+
+@node Field, Material, Coord, Reference guide
+@unnumberedsec @code{Field}
+@cindex @code{Field}
+@cindex Poynting vector
+
+@noindent
+A data structure containing an electromagnetic field at a given location.
+
+@noindent
+Member functions:
+
+@itemize @bullet
+@item
+@code{E1()}: first component (@code{x} in Cartesian, @code{rho} in 
+cylindrical systems) of @code{E} field.
+@item
+@code{E2()}: second component (@code{y} in Cartesian, @code{phi} in 
+cylindrical systems) of @code{E} field.
+@item
+@code{Ez()}: @code{z} component of @code{E} field.
+@item
+@code{H1()}: first component (@code{x} in Cartesian, @code{rho} in 
+cylindrical systems) of @code{H} field.
+@item
+@code{H2()}: second component (@code{y} in Cartesian, @code{phi} in 
+cylindrical systems) of @code{H} field.
+@item
+@code{Hz()}: @code{z} component of @code{H} field.
+@item
+@code{S1()}: first component (@code{x} in Cartesian, @code{rho} in 
+cylindrical systems) of Poynting vector @code{E x H*}.
+@item
+@code{S2()}: second component (@code{y} in Cartesian, @code{phi} in 
+cylindrical systems) of Poynting vector @code{E x H*}.
+@item
+@code{Sz()}: @code{z} component of Poynting vector @code{E x H*}.
+@item
+@code{abs_E()}: magnitude of @code{E} field.
+@item
+@code{abs_H()}: magnitude of @code{H} field.
+@item
+@code{abs_S()}: magnitude of Poynting vector.
+@end itemize
+
+
+@node Material, Waveguide, Field, Reference guide
+@unnumberedsec @code{Material}
+@cindex @code{Material}
+
+@noindent
+An isotropic material.
+
+@noindent
+Constructors:
+
+@itemize @bullet
+@item
+@code{Material(Complex n)}
+@item
+@code{Material(Complex n, Complex mur)}
+@end itemize
+
+@noindent
+Member functions:
+
+@itemize @bullet
+@item
+@code{n()}: returns refractive index.
+@item
+@code{set_n()}: sets refractive index.
+@item
+@code{epsr()}: returns relative permittivity.
+@item
+@code{mur()}: returns relative permeability.
+@item
+@code{set_mur()}: sets relative permeability.
+@item
+@code{eps()}: returns permittivity.
+@item
+@code{mu()}: returns permeability.
+@item
+@code{gain()}: returns material gain at current wavelength in 1/cm.
+@end itemize
+
+
+@node Waveguide, Mode, Material, Reference guide
+@unnumberedsec @code{Waveguide}
+@cindex @code{Waveguide}
+
+@noindent
+A general waveguide. Serves a base class for e.g. @code{Slab} or @code{Circ}.
+
+@noindent
+Member functions:
+
+@noindent
+@itemize @bullet
+@item
+@code{core()}: returns core material
+@item
+@code{eps(Coord)}: returns permittivity at a certain coordinate.
+@item
+@code{mu(Coord)}: return permeability at a certain coordinate.
+@item
+@code{n(Coord)}: return refractive index at a certain coordinate.
+@item
+@code{N()}: returns number of modes in this waveguide. Is the number set by
+@code{set_N()}.
+@item
+@code{mode(int i)}: returns Mode with index @code{i}. Zero is the fundamental 
+mode.
+@item
+@code{calc()}: calculates the modes in this waveguide.
+@item
+@code{plot()}: interactively plots the modes in this waveguide.
+@item
+@code{plot_n(r_x))}: lower level routine to plot the refractive index.
+@code{r_x} is range objects (e.g @code{arange(x0, x1, dx)}) specifying which 
+interval to plot and with which resolution. @code{x} is the transverse 
+direction. An extra named argument @code{filename='outputname.formatextension'} is supported. For pictures, a variety of formats are supported (gif, jpg, png, bmp, eps, ps, tiff, pdf, xbm, dib), where the suffix of the filename will determine the format to be used.
+@item
+@code{plot_field(component, r_x))}: lower level field plot routine.
+@code{component} is a function operating on a @code{Field} object specifying
+which field component to plot, e.g. @code{lambda f : f.E2().real}. 
+@code{r_x} is a range object (e.g @code{arange(x0, x1, dx)}) 
+specifying which  interval to plot and with which resolution. @code{x} is the 
+transverse  direction. Note that the function
+also supports an additional named argument @code{filename='outputname.formatextension'}. For pictures, a variety of formats are 
+supported (gif, jpg, png, bmp, eps, ps, tiff, pdf, xbm, dib), where the 
+suffix of the filename will determine the format to be used. Other arguments
+are @code{overlay_n} (defaults to true) which overlays the index profile
+on the field plot, and @code{contour} (defaults to true) which uses contours
+to show the index profile rather than gray scale.
+
+@end itemize
+
+@noindent
+@xref{Slab}, @ref{Circ}.
+
+
+@node Mode, E_Wall, Waveguide, Reference guide
+@unnumberedsec @code{Mode}
+@cindex @code{Mode}
+
+@noindent
+Member functions:
+
+@noindent
+@itemize @bullet
+@item
+@code{kz()}: returns propagation factor.
+@item
+@code{n_eff()}: returns effective index.
+@item
+@code{pol()}: returns polarisation.
+@item
+@code{field(Coord)}: returns field at a given coordinate.
+@end itemize
+
+
+@node E_Wall, H_Wall, Mode, Reference guide
+@unnumberedsec @code{E_Wall}
+@cindex @code{E_Wall}
+
+@noindent
+Constructor: 
+
+@itemize @bullet
+@item
+@code{E_Wall(Waveguide)}
+@end itemize
+
+@noindent
+An electric wall with a Waveguide in front of it. Used a a boundary 
+condition in the @code{z}-direction, not to be confused with boundaries
+in the transverse direction.
+
+@noindent
+Note: the default boundary condition in the @code{z}-direction is an open
+boundary.
+
+@noindent
+@xref{H_Wall}.
+
+
+
+@node H_Wall, Expression, E_Wall, Reference guide
+@unnumberedsec @code{H_Wall}
+@cindex @code{H_Wall}
+
+@noindent
+Constructor: 
+
+@itemize @bullet
+@item
+@code{H_Wall(Waveguide)}
+@end itemize
+
+@noindent
+An magnetic wall with a Waveguide in front of it. Used a a boundary 
+condition in the @code{z}-direction, not to be confused with boundaries
+in the transverse direction.
+
+@noindent
+Note: the default boundary condition in the @code{z}-direction is an open
+boundary.
+
+@noindent
+@xref{E_Wall}.
+
+
+
+@node Expression, Term, H_Wall, Reference guide
+@unnumberedsec @code{Expression}
+@cindex @code{Expression}
+
+@noindent
+This class only has to be used explicitly when assembling expressions
+term-by-term:
+
+@noindent
+@code{e = Expression()} creates an empty expression, and
+@code{e.add(Term)} adds a term to it.
+
+@noindent
+@xref{Term}.
+
+
+@node Term, Stack, Expression, Reference guide
+@unnumberedsec @code{Term}
+@cindex @code{Term}
+
+@noindent
+Basic building block of expressions. Some examples of terms are
+
+@noindent
+@example
+material(d)
+waveguide(d)
+2*expression
+(expression)
+@end example
+
+@noindent
+@xref{Expression}.
+
+
+
+@node Stack, Cavity, Term, Reference guide
+@unnumberedsec @code{Stack}
+@cindex @code{Stack}
+
+@noindent
+A stack of waveguides.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Stack(Expression)}
+@end itemize
+
+@noindent
+Member functions:
+
+@itemize @bullet
+@item
+@code{calc()}: calculates the scattering matrices of the stack.
+@item
+@code{free()}: frees the memory allocated for the scattering matrices.
+@item
+@code{inc()}: returns incidence waveguide.
+@item
+@code{ext()}: return exit waveguide.
+@item
+@code{length()}: returns length of the stack along the @code{z}-axis.
+@item
+@code{width()}: returns the @code{c1}-length of the stack. 
+@item
+@code{n(Coord)}: returns refraction index at a given coordinate.
+@item
+@code{eps(Coord)}: returns permittivity at a given coordinate.
+@item
+@code{mu(Coord)}: returns permeability at a given coordinate.
+@item
+@code{R12()}: returns reflection matrix for fields incident from the left
+(@code{z=0}).
+@item
+@code{R12(i,j)}: returns element of the reflection matrix R12, index starting
+at zero. Because of the definition of this matrix, this is the reflection from
+mode @code{j} to mode @code{i}. Similar functions exist for the transmission 
+matrix @code{T12}, and  for @code{R21} and @code{T21} describing incidence 
+from the right side. (@code{z=stack.length()})
+@item
+@code{set_inc_field(vector)}: sets incident field from left side (@code{z=0}).
+@item
+@code{set_inc_field(vector, vector)}: sets incident field from left and
+right side.
+@item
+@code{set_inc_field_gaussian(A, sigma, x0, eps)}: set a gaussian incident field
+@code{A*exp(-0.5*((x-x0)/sigma)**2} and use precision @code{eps} to calculate
+the overlap integrals.
+@item
+@code{set_inc_field_plane_wave(A, theta, eps)}: set a plane wave incident field
+with amplitude @code{A}, angle @code{theta} in radians, and use precision @code{eps} to calculate the overlap integrals.
+@item
+@code{set_inc_field_function(f, eps)}: set an incident field described by
+a function @code{f} and use precision @code{eps} to calculate the overlap 
+integrals. @code{f} describes the @code{E2} for TE polarisation and the 
+@code{H2} field for TM polarisation. 
+@item
+@code{plot_n(stack, r_x, r_z)}: lower level routine to plot the refractive index.
+@code{r_x} and @code{r_z} are range objects (e.g @code{arange(x0, x1, dx)}) specifying which 
+interval to plot and with which resolution. @code{x} is the transverse 
+direction, @code{z} the propagation direction. An extra named argument @code{filename='outputname.formatextension'} is supported. For pictures, a variety of formats are supported (gif, jpg, png, bmp, eps, ps, tiff, pdf, xbm, dib), where the suffix of the filename will determine the format to be used.
+@end itemize
+
+@noindent
+The following functions are only meaningful when an incident field has
+been set:
+
+@itemize @bullet
+@item
+@code{plot()}: interactively plots the fields in the stack.
+@item
+@code{plot_field(component, r_x, r_z))}: lower level field plotting routine.
+@code{component} is a function operating on a @code{Field} object specifying
+which field component to plot, e.g. @code{lambda f : f.E2().real}. 
+@code{r_x} and @code{r_z} are range objects (e.g @code{arange(x0, x1, dx)}) 
+specifying which  interval to plot and with which resolution. @code{x} is the 
+transverse  direction, @code{z} the propagation direction. Note that the function
+also supports an additional named argument @code{filename='outputname.formatextension'}. For pictures, a variety of formats are 
+supported (gif, jpg, png, bmp, eps, ps, tiff, pdf, xbm, dib), where the 
+suffix of the filename will determine the format to be used. Other arguments
+are @code{overlay_n} (defaults to true) which overlays the index profile
+on the field plot, and @code{contour} (defaults to true) which uses contours
+to show the index profile rather than gray scale.
+@item
+@code{animate_field(stack, component, r_x, r_z)}: animates the 
+2D field profile. @code{component} is a 
+function operating on a  @code{Field} object specifying which (complex) 
+field component to plot, e.g. @code{lambda f : f.E2()}. @code{r_x} and 
+@code{r_z} are range objects (e.g @code{arange(x0, x1, dx)}) specifying 
+which  interval to plot and with which resolution. @code{x} is the 
+transverse  direction, @code{z} the propagation direction. Note that the function
+also supports an additional named argument @code{filename='outputname'}, which writes the animation to an uncompressed gif. Other arguments are @code{overlay_n} (defaults to true) which overlays the index profile on the field plot, and @code{contour} (defaults to true) which uses contours to show the index profile rather than gray scale.
+@item
+@code{field(Coord)}: returns field at a given coordinate.
+@item
+@code{inc_field()}: returns incident field from left side.
+@item
+@code{refl_field()}: returns reflected field from left side.
+@item
+@code{trans_field()}: returns transmitted field to right side.
+@item
+@code{fw_bw(z, limit=Min)}: returns a tuple with two vectors containing the 
+forward and backward field expansions at position @code{z, limit}. 
+@code{limit} is optional and can be either @code{Min} or @code{Plus}.
+@item
+@code{inc_S_flux(Complex x0, Complex x1, Real eps)}: returns power flux in the
+@code{z}-direction at @code{z=0} between @code{x0} and @code{x1}, calculated 
+with relative precision @code{eps}.
+@item
+@code{ext_S_flux(Complex x0, Complex x1, Real eps)}: returns power flux in the
+@code{z}-direction  at @code{z=stack.length()} between @code{x0} and 
+@code{x1}, calculated with relative precision @code{eps}.
+@item
+@code{lateral_S_flux(Complex x0)}: returns power flux in the @code{x-direction}
+at @code{x=x0} between @code{z=0} and @code{z=stack.length()}.
+@end itemize
+ 
+
+@node Cavity, BlochStack, Stack, Reference guide
+@unnumberedsec @code{Cavity}
+@cindex @code{Cavity}
+
+@noindent
+A cavity containing a cavity cut, dividing it into a top and a bottom stack.
+These stacks are defined as seen from the cavity cut. A gain material has to
+be set with @code{set_gain_material(Material)}.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Cavity(Stack bottom, Stack top)} 
+@end itemize
+
+@noindent
+Member functions:
+
+@itemize @bullet
+@item
+@code{find_mode(Real lambda0, Real lambda1, Real n_imag0=0, Real n_imag1=0.015, int passes=1)}: finds a laser mode in a given wavelength and gain interval. 
+Wavelength and gain are optimised around the resonance for @code{passes} 
+times.  For the gain interval, a default range is assumed for the
+imaginary part of the gain index between 0 and 0.015. The parameters of the 
+laser mode are printed out upon completion, and the cavity 
+field is automatically set to the lasing field.
+@item
+@code{find_all_modes(lambda0, lambda1, deltalambda, n_imag0=0.0, n_imag1=0.015, passes=1)}: similar to @code{find_mode()}, but prints out all laser modes found in this range. Modes that are spaced closer than @code{deltalambda} will
+not be resolved.
+@item
+@code{sigma()}: returns the singular value of the cavity at the current
+wavelength and material gain. (The singular value is minimised when looking
+for laser modes.)
+@item
+@code{set_source(Coord pos, Coord orientation)}: places a dipole current
+source at the cavity cut at a position @code{pos} and with a vectorial 
+orientation given by @code{orientation}.
+@item
+@code{set_source(forward, backward)}: places a source at the cavity cut 
+described by the expansion vectors @code{forward} and @code{backward}.
+@item
+@code{field(Coord)}: returns field at given coordinate. Only meaningful if
+a laser mode has been located, or if a source has been explicitly set.
+@item
+@code{plot()}: interactively plots the fields in the cavity.  Only meaningful ifa laser mode has been located, or if a source has been explicitly set.
+@item
+@code{plot_n()}: lower level routine to plot the refractive index. See @code{Stack} for more details.
+@item
+@code{plot_field()}: lower level field plot routine. See @code{Stack} for more details.
+@item
+@code{animate_field()}: lower level field plot routine. See @code{Stack} for more details.
+@item
+@code{n(Coord)}: returns refractive index at given coordinate.
+@item
+@code{bot_stack()}: returns bottom stack. 
+@item
+@code{top_stack()}: returns top stack.
+@item
+@code{length()}: returns the @code{z}-length of the cavity.
+@item
+@code{width()}: returns the @code{c1}-length of the cavity. 
+@end itemize
+
+
+@node BlochStack, BlochMode, Cavity, Reference guide
+@unnumberedsec @code{BlochStack}
+@cindex @code{BlochStack}
+
+@noindent
+An infinite periodic repetition of a given Stack, supporting Bloch modes.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{BlochStack(Expression)} 
+@end itemize
+
+@noindent
+Member functions
+
+@itemize @bullet
+@item
+@code{N()}: returns number of modes in this waveguide. Is twice the number set
+by @code{set_N()}, as it includes both forward and backward Bloch waves.
+@item
+@code{mode(int i)}: returns BlochMode with index @code{i}. Index starts at 
+zero.
+@item
+@code{calc()}: calculates the BlochModes in this waveguide.
+@item
+@code{plot()}: plots the BlochModes.
+@item
+@code{plot_n()}: lower level routine to plot the refractive index. See @code{Stack} for more details.
+@item
+@code{length()}: returns the @code{z}-length of the basic period.
+@item
+@code{width()}: returns the @code{c1}-length of the basic period.
+@item
+@code{beta_vector()}: returns a vector containing all the propagation 
+constants of the BlochModes.
+@end itemize
+
+@noindent
+@xref{BlochMode}.
+
+
+
+@node BlochMode, InfStack, BlochStack, Reference guide
+@unnumberedsec @code{BlochMode}
+@cindex @code{BlochMode}
+
+@noindent
+Mode inside a BlochStack.
+
+@noindent
+Member functions:
+
+@itemize @bullet
+@item
+@code{kz()}: returns propagation factor.
+@item
+@code{n_eff()}: returns effective index.
+@item
+@code{pol()}: returns polarisation.
+@item
+@code{field(Coord)}: returns field at a given coordinate.
+@item
+@code{fw_field()}: returns expansion coefficients of forward field
+component of this mode.
+@item
+@code{bw_field()}: returns expansion coefficients of backward field
+component of this mode.
+@item
+@code{fw_bw(z, limit=Min)}: returns a tuple with two vectors containing the 
+forward and backward field expansions at position @code{z}. @code{limit} is 
+optional and can be either @code{Min} or @code{Plus}.
+@item
+@code{S_flux(Complex x0, Complex x1, Real eps)}: returns power flux in the
+@code{z}-direction at @code{z=0} between @code{x0} and @code{x1}, calculated 
+with relative precision @code{eps}.
+@item
+@code{plot_field()}: lower level field plot routine. See @code{Stack} for more details.
+@item
+@code{animate_field()}: lower level field plot routine. See @code{Stack} for more details.
+@end itemize
+
+@noindent
+@xref{BlochStack}.
+
+
+
+@node InfStack, Geometry, BlochMode, Reference guide
+@unnumberedsec @code{InfStack}
+@cindex @code{InfStack}
+
+@noindent
+An infinite periodic repetition of a given period, which can be used to
+terminate another stack.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{InfStack(Expression)} 
+@end itemize
+
+
+
+@node Geometry, Circle, InfStack, Reference guide
+@unnumberedsec @code{Geometry}
+@cindex @code{Geometry}
+
+@noindent
+Creates an expression from a collection of geometric shapes.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Geometry(Mat)}: creates a geometry with a given background material. 
+@end itemize
+
+@noindent
+Member functions:
+
+
+@itemize @bullet
+@item
+@code{+= Shape}: add a shape, which can be a @code{Circle}, @code{Square}.
+@code{Rectangle}, @code{Triangle} or a @code{Picture}. In case of overlap, 
+shapes that are added later take precedence. When using Picture, only the last 
+one added will be used.
+@item
+@code{to_expression(prop0,prop1,d_prop,trans0,trans1,d_trans)}: see
+the explanation in @xref{Defining complicated structures} for a description of 
+these arguments. When working with Picture, see @xref{Picture} for more details.
+@end itemize
+
+
+@noindent
+@xref{Circle}, @xref{Square}, @xref{Rectangle}, @xref{Triangle}, @xref{Picture}.
+
+
+
+@node Circle, Square, Geometry, Reference guide
+@unnumberedsec @code{Circle}
+@cindex @code{Circle}
+
+@noindent
+A circle shape for use in a @code{Geometry}.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Circle(Point(x,y), rad, Material)}: creates a circle with a given center,
+radius and material.
+@end itemize
+
+@noindent
+@xref{Geometry}
+
+
+
+@node Square, Rectangle, Circle, Reference guide
+@unnumberedsec @code{Square}
+@cindex @code{Square}
+
+@noindent
+A square shape for use in a @code{Geometry}.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Square(Point(x,y), a, Material)}: creates a square with a given 
+center, side and material.
+@end itemize
+
+@noindent
+@xref{Geometry}
+
+
+
+@node Rectangle, Triangle, Square, Reference guide
+@unnumberedsec @code{Rectangle}
+@cindex @code{Rectangle}
+
+@noindent
+A rectangular shape for use in a @code{Geometry}.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Rectangle(Point(x,y), Point(x,y), Material)}: creates a rectangle with a 
+given bottom left and top right point and material.
+@end itemize
+
+@noindent
+@xref{Geometry}
+
+
+
+@node Triangle, Picture, Rectangle, Reference guide
+@unnumberedsec @code{Triangle}
+@cindex @code{Triangle}
+
+@noindent
+A triangular shape for use in a @code{Geometry}.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Triangle(Point(x,y), Point(x,y), Point(x,y), Material)}: creates a 
+triangle out of three vertices and a material.
+@end itemize
+
+@noindent
+@xref{Geometry}
+
+
+
+@node Picture, Planar, Triangle, Reference guide
+@unnumberedsec @code{Picture}
+@cindex @code{Picture}
+
+@noindent
+A picture (in png, jpg, ... format) for use in a @code{Geometry}, to be converted to an expression. It will not be combined with the other shapes in @code{Geometry},  and only the picture that is added last to the @code{Geometry} will be used.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Picture(picturename, n_min=x, n_max=y)}: creates a picture object from filename @code{picturename} to be used in a @code{Geometry}.    
+@end itemize
+
+@noindent
+
+The picture will be converted to grayscale, with white being mapped to a material with refractive index @code{n_min} and black to @code{n_max}. The indices for grayscales are obtained through linear interpolation.
+ 
+When using the @code{Geometry} function
+
+@code{to_expression(prop0, prop1, d_prop, verbose=True,rescaling='ANTIALIAS')},
+the following will happen. The values of @code{prop0} and @code{prop1} will set the conversion from pixel units to physical length units. The parameter @code{d_prop} determines the resolution: when set to 0 (the default), no information is lost in the picture and every pixel is used as is. In case the thickness of the slice @code{d_prop} is set to such a value that results in a coarser picture than the original one, the following down-sample mechanisms can be used:
+
+
+@itemize @bullet
+@item
+@code{NEAREST}: 'Nearest' algorithm from the PIL library. As this method takes
+ the nearest point, no new gray colours will be created.
+@item
+@code{ANTIALIAS}: 'Average' algorithm from the PIL library. This will create a
+grayscale image.    
+@item
+@code{INV_AVERAGE}: Similar to @code{ANTIALIAS}, but use geometric averaging.
+@end itemize
+
+
+@noindent
+@xref{Geometry}
+
+
+
+
+
+@node Planar, Circ, Picture, Reference guide
+@unnumberedsec @code{Planar}
+@cindex @code{Planar}
+
+@noindent
+A type of waveguide, that can be used e.g. to construct Stacks.
+@code{Planar} is an infinitely stratified medium, and is different from
+other waveguides (like @code{Slab} and @code{Circ}) in the sense that all
+modes (or propagation angles) are decoupled. Therefore, only one propagation
+angle is considered at a time.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Planar(Material)}
+@end itemize
+
+@noindent
+Member functions: same as @code{Waveguide}, in addition to
+
+@itemize @bullet
+@item
+@code{set_theta(Complex)}: set propagation angle in radians in this layer. This
+automatically fixes the propagation angle in the other Planars
+because of Snell's Law. Note that you should set the wavelength before setting the angle, as @code{set_theta} effectively sets the transverse part of the wavevector, which is dependent on the wavelength.
+@end itemize
+
+@noindent
+@xref{Waveguide}.
+
+
+
+@node Circ, Slab, Planar, Reference guide
+@unnumberedsec @code{Circ}
+@cindex @code{Circ}
+
+@noindent
+A type of waveguide, that can be used e.g. to construct Stacks, BlochStacks 
+and Cavities. @code{Circ} is an cylindrical waveguide bounded by a perfectly
+conducting metal wall. Currently, at most on radial refractive index step is
+supported in the waveguide.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Circ(Expression)}
+@end itemize
+
+@noindent
+Member functions: same as @code{Waveguide}.
+
+@noindent
+@xref{Waveguide}.
+
+
+
+@node Slab,  , Circ, Reference guide
+@unnumberedsec @code{Slab}
+@cindex @code{Slab}
+@cindex boundary conditions for slabs
+
+@noindent
+A type of waveguide, that can be used e.g. to construct Stacks, BlochStacks 
+and Cavities. @code{Slab} is a 1D slab waveguide consisting of an arbitrary
+number of layers. Lateral boundary conditions default to electric walls,
+but can be set at will on a slab-by-slab basis or globally.
+
+@noindent
+Constructor:
+
+@itemize @bullet
+@item
+@code{Slab(Expression)}
+@end itemize
+
+@noindent
+Member functions: same as @code{Waveguide} in addition to
+
+@itemize @bullet
+@item
+@code{width()}: returns the width along @code{x} of the slab.
+@item
+@code{set_lower_wall(SlabWall)}: sets the wall at @code{x=0} for this slab.
+Possible choices for SlabWall include @code{slab_E_wall} and 
+@code{slab_H_wall}.
+@item
+@code{set_upper_wall(SlabWall)}: sets the wall at @code{x=slab.width()} 
+for this slab. Possible choices for SlabWall include @code{slab_E_wall} and 
+@code{slab_H_wall}.
+@end itemize
+
+@noindent
+@xref{Waveguide}.
+
+
+
+
+@node Index,  , Reference guide, top
+@unnumbered Index
+@printindex cp
+
+@bye

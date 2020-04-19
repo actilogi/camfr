@@ -1,0 +1,84 @@
+2005-06-30  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* allroots.cpp: Make more standards compliant.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* mueller.cpp: Improve debug code.
+
+2003-07-15  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* mueller.cpp: Better check for degenerate modes.
+
+2003-05-14  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: Minor numerics tweak.
+
+2003-05-20  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: Improve refining solver.
+
+2003-03-17  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: Improve refining solver.
+
+2003-02-17  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.h: Add verbosity to refining solver.
+	* mueller.cpp: Ditto.
+
+2003-01-22  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.h: Improve output from solver.
+	* mueller.cpp: Ditto.
+
+2002-11-27  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.h: Add solver starting from estimate vector.
+	* mueller.cpp: Ditto.
+
+2002-06-18  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: Check for NaN.
+
+2002-05-10  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* allroots.cpp: Improve robustness.
+
+2002-05-10  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.h: Optionally deflate extra zeros in mueller_multiple.
+	* mueller.cpp: Ditto.
+
+2002-05-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: More robust underflow convergence.
+
+2002-05-01  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* allroots.h: Add support for downwards contour extension.
+	* allroots.cpp: Ditto.
+	* contour.h: Ditto.
+	* contour.cpp: Ditto.
+
+2002-04-30  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.h: Add support for multiple roots and for 1 and
+                     3 initial estimates.
+	* meuller.cpp: Ditto.
+	* allroots.cpp: Add support for multiple roots.
+
+2002-03-17  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* patterson_z_n.cpp: Increase portability.
+	* roottest.cpp: Ditto.
+
+2002-03-14  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mueller.cpp: Make too slowly varying function no longer fatal.
+
+2002-02-13  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* allroots.cpp: Don't give up prematurely.
+	* contour.cpp: Reorder contours.
+

@@ -1,0 +1,748 @@
+2006-08-03  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+       * icache.cpp: Fix bad check for monoscatterers.
+
+2006-07-28  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Remove obsolete compiler workaround.
+	* defs.cpp: Ditto.
+
+2006-07-28  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* icache.cpp: Don't delete elements of a list while iterating over it.
+
+2006-07-27  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Split in two.
+	* camfr_wrap_2.cpp: New file.
+	* camfr_wrap.h: New file.
+
+2006-07-07  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Migrate to numpy.
+
+2006-06-27  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* stack.cpp: Speed up get_R12() and friends.
+
+2006-06-27  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Add get_fourier_orders.
+
+2006-04-25  Philippe Tassin <Philippe.Tassin@vub.ac.be>
+
+	* materials.h: Add support for left handed materials.
+	* materials.cpp: Ditto.
+	* waveguide.h: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2006-04-25  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add mueller precision.
+	* defs.cpp: Same.
+	* camfr_wrap.cpp: Same.
+
+2006-02-24  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* interface.cpp: Warn about incorrect assumptions.
+
+2006-02-24  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add always dense.
+	* defs.cpp: Same.
+	* icache.h: Same.
+	* icache.cpp: Same.
+
+2006-02-23  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* bloch.cpp: Speed up get_expansion_matrices considerably.
+
+2006-02-23  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* stack.cpp: Speed up fw_bw_field in special cases.
+
+2006-02-17  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add sqrt_45.
+	* defs.cpp: Ditto.
+
+2005-11-29  Peter Debackere  <Peter.Debackere@UGent.be>
+
+	* camfr_wrap.cpp: Add set_low_index_core, set_estimate_cutoff.
+	* defs.h: Ditto.
+	* defs.cpp: Ditto.
+
+2005-09-28  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add set_calc_field_profiles.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2005-09-15  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* scatterer.h: Avoid uninitialised variable.
+
+2005-09-15  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* waveguide.h: Deregister waveguide after destruction.
+
+2005-08-19  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* waveguide.h: Don't copy gain material.
+	* waveguide.cpp: Ditto.
+	* scatterer.h: Ditto.
+	* scatterer.cpp: Ditto.
+	* stack.cpp: Ditto.
+	* interface.cpp: Ditto.
+	* infstack.cpp: Ditto.
+
+2005-08-10  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Add no_wall for Section.
+
+2005-08-05  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* cavity.cpp: Don't allow to turn off coherence.
+
+2005-08-05  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* stack.h: Add power scattering matrices.
+	* stack.cpp: Ditto.
+
+2005-08-05  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add always_recalc.
+	* defs.cpp: Ditto.
+	* waveguide.cpp: Ditto.
+	* scatterer.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+	
+2005-07-30  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Make more standards compliant.
+	* cavity.cpp: Ditto.
+
+2005-07-23  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Allow to turn off cavity coherence.
+	* defs.cpp: Ditto.
+	* cavity.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2005-06-23  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Wrap extra BlochSection functions.
+
+2005-06-13  Peter Debackere  <Peter.Debackere@UGent.be>
+
+	* camfr_wrap.cpp: Add ASR solver.
+	* defs.h: Ditto.
+	* defs.cpp: Ditto.
+
+2005-06-03  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* interface.h: Fix interface routines with complex conjugate.
+	* interface.cpp: Ditto.
+
+2005-05-30  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* S_scheme_fields.h: Fix Planar plotting.
+
+2005-05-27  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* interface.h: Add interface routines with complex conjugate.
+	* interface.cpp: Ditto.
+	* camfr_wrap.cpp: Add BlochSection.
+
+2005-04-06  Peter Vandersteegen  <Peter.Vandersteegen@UGent.be>
+
+	* camfr_wrap.cpp: Fix get_kt() and set_kt().
+
+2005-03-01  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* geometry3d.py: Implement add_flipped.
+
+2005-02-18  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Add L_anis solver.
+
+2005-02-08  Pieter Dumon  <Pieter.Dumon@UGent.be>
+
+	* bloch.cpp: Better detection of fw/bw modes.
+	* infstack.cpp: Ditto.
+
+2005-02-04  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* material.h: Add BiaxialMaterial.
+	* camfr_wrap.cpp: Ditto.
+
+2005-02-02  Pieter Dumon  <Pieter.Dumon@UGent.be>
+
+	* bloch.h: Add support for BlochStacks inside of other Stacks.
+	* bloch.cpp: Ditto.
+	* interface.h: Ditto.
+	* interface.cpp: Ditto.
+	* stack.cpp: Ditto.
+	* stack.h: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2005-01-28  Peter Debackere  <Peter.Debackere@UGent.be>
+
+	* camfr_wrap.cpp: Add switches for ASR solver.
+	* defs.h: Ditto.
+
+2004-10-18  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* geometry.py: Add switch to calculate average eps and 1/eps.
+
+2004-08-18  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* defs.h: Add switch for Davy.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2004-07-30  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.py: Add 'set_keep_all_estimates'.
+
+2004-06-10  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* geometry3d.py: Fix rounding errors.
+
+2004-06-03  Pieter Dumon  <Pieter.Dumon@UGent.be>
+
+	* field.cpp: Don't propagate inside a BlochStack.
+	* icache.cpp: Don't make flipped scatterers for BlochStacks.
+
+2004-06-03  Pieter Dumon  <Pieter.Dumon@UGent.be>
+
+	* geometry3d.py: New file.
+	* geometry.py: Add compare functions.
+
+2004-06-03  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* S_scheme_fields.cpp: Fix transparent scatterers for MonoStacks.
+
+2004-04-15  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* field.cpp: Detect and fix overflow.
+
+2004-04-04  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Lambda can now be complex.
+	* defs.h: Ditto.
+	* material.h: Ditto.
+	* cavity.cpp: Ditto.
+
+2004-02-12  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* geometry.py: Relax tolerance.
+
+2003-12-04  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* camfr_wrap.cpp: Wrap mode_correction enum.
+
+2003-12-04  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* mode.h: Remove wrapper.
+
+2003-12-04  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* camfr_wrap.cpp: Add limit in fw_bw.
+
+2003-11-17  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* defs.h: Rework configuration globals.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-11-17  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* defs.h: Add global.section_solver.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-11-17  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* waveguide.h: Rework eps_at, mu_at.
+	* stack.h: Ditto.
+	* stack.cpp: Ditto.
+	* bloch.h: Ditto.
+
+2003-11-14  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* camfr_wrap.cpp: Wrap set_estimate for Slab.
+
+2003-11-04  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* defs.cpp: Undo change in unstable_exp_threshold.
+
+2003-11-03  Lieven Vanholme  <Lieven.Vanholme@ugent.be>
+
+	* camfr_wrap.cpp: fix plane wave incident field.
+
+2003-11-03  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* defs.cpp: Relax unstable_exp_threshold.
+
+2003-08-04  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* geometry.py: Fix thinko in to_expression.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* scatterer.h: Improve all_layers_uniform.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* geometry.py: Improve to_expression.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* defs.h: Add field_calc_heuristic.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* S_scheme_fields.cpp: Better check for DiagScatterer.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* S_scheme.cpp: use unstable_exp_threshold.
+
+2003-08-01  Peter Bienstman  <Peter.Bienstman@ugent.be>
+
+	* cavity.cpp: Improve checking for gain_material (again).
+
+2003-07-14 Peter Bienstman <Peter.Bienstman@ugent.be>
+
+	* cavity.cpp: Improve checking for gain_material.
+
+2003-07-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.h: Improve memory management.
+	* stack.cpp: Ditto.
+
+2003-07-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.cpp: Improve memory management.
+
+2003-07-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Add pick_sign_k.
+	* defs.cpp: Ditto.
+
+2003-07-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* scatterer.h: Add SquashedScatterer.
+	* scatterer.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-07-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* S_scheme.cpp: Regularise in case of resonance.
+
+2003-06-13  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add get_polarisation.
+
+2003-06-04  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* geometry.py: Fix add_flipped.
+
+2003-05-23  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Warn if incident field not set.
+
+2003-04-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add various width() functions.
+
+2003-04-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add Cavity::bot_stack and top_stack.
+	* cavity.h: Ditto.
+
+2003-03-31  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add Section:set_estimate() and Section.set_sorting().
+
+2003-03-13  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* cavity.h: Reorder arguments.
+	* cavity.cpp: Ditto.
+
+2003-02-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Added Material::set_n and set_mur.
+
+2003-02-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* bloch.h: Added BlochMode::fw_bw.
+	* bloch.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-02-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* cavity.h: More logical argument order in constructor.
+	* cavity.cpp: Ditto.
+
+2003-02-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Fix naming clash.
+
+2003-02-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.cpp: Fix zero inc slab bug.
+	* S_scheme_fields.cpp: Ditto.
+
+2003-02-04  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.h: Remove superfluous constructor.
+	* field.cpp: Ditto.
+	* S_scheme_fields.cpp: Ditto.
+	* bloch.cpp: Ditto.
+	* stack.cpp: Ditto.
+	* waveguide.cpp: Ditto.
+
+2003-02-04  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* cavity.h: add eps_at, mu_at, n_at.
+	* cavity.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2003-02-04  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.h: constify arguments.
+	* field.cpp: Ditto.
+
+2003-01-31  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.cpp: Eliminate unneeded transparent scatterer.
+
+2003-01-31  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.cpp: Improve memory management.
+	* field.h: Ditto.
+
+2003-01-31  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Speed up field expansions.
+
+2003-01-28  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Fix BlochStack.length().
+
+2003-01-08  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add SectionMode.n().
+
+2003-01-08  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.h: Copy expressions to avoid side-effects.
+	* expressions.cpp: Ditto.
+	* stack.cpp: Ditto.
+
+2002-12-05  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Add backward modes option.
+	* camfr_wrap.cpp: Ditto.
+
+2002-12-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add SectionMode.
+
+2002-11-28  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.h: Add remove_term_front.
+	* expression.cpp: Ditto.
+
+2002-11-28  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* S_scheme_fields.cpp: Improve detection of Diag and Mono.
+
+2002-11-26  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* __init__.py: Remove enum definitions.
+
+2002-11-26  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* cavity.h: Make more robust for user errors.
+        * cavity.cpp: Ditto.
+
+2002-11-26  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Add global.mode_surplus.
+        * defs.cpp: Ditto.
+
+2002-11-26  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Update to Boost release version.
+
+2002-11-13  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Add series solver option.
+	* camfr_wrap.cpp: Ditto.
+	* __init__.py: Ditto.
+	
+2002-09-12  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* waveguide.cpp: Recalc if global.N changes.
+	* scatterer.cpp: Ditto.
+
+2002-09-12  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.h: Add abs_S.
+
+2002-08-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* __init__.py: Import camfr_tk by default.
+
+2002-08-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Fix memory management issues.
+
+2002-07-26  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* infstack.cpp: Fix forward detection.
+
+2002-07-19  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Upgrade to new Boost version.
+
+2002-07-18  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.h: Make Scatterer and Stack implicitly convertible 
+	  to Term.
+	* expression.cpp : Ditto.
+
+2002-07-16  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Fix field in exit medium.
+
+2002-07-16  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Call calc_interface_fields earlier.
+
+2002-07-16  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.h: Add Poynting vector to Field.
+	* camfr_wrap.cpp: ditto.
+
+2002-07-15  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Major change in the way PML is defined.
+	* geometry.py: Ditto.
+	* waveguide.h: Ditto.
+
+2002-07-15  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Replace set_left/right_wall by 
+	  set_lower/upper_wall.
+
+2002-06-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.h: Add fw_bw_field.
+	* stack.cpp: Ditto.
+
+2002-06-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* scatterer.cpp: Add spurious warnings in walls.
+
+2002-06-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.cpp: Add propagate function.
+
+2002-06-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* field.h: Add deep copy constructor.
+
+2002-06-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* geometry.py: Fix typo bug.
+
+2002-06-04  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Simplify interface for arbitrary excitations.
+
+2002-06-03  Lieven Vanholme <Lieven.Vanholme@rug.ac.be>
+
+	* camfr_wrap.cpp: Support for arbitrary excitations.
+
+2002-05-29  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* infstack.cpp: Only warn when power flow is non-zero.
+
+2002-05-10  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* infstack.cpp: Cleanup.
+	
+2002-05-10  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* bloch.h: Remove brillouin_eliminate_modes.
+	* bloch.cpp: Ditto.
+
+2002-05-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Improve InfStack wrapping.
+
+2002-05-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Set N to 1 for Monostack.
+
+2002-05-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Fix field in exit medium.
+
+2002-05-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* interface.cpp: Check if widths match.
+
+2002-05-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* waveguide.h: Add c1_size().
+	* bloch.h: Ditto.
+
+2002-05-08  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Compare pointers instead of waveguides.
+
+2002-05-07  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* material.cpp: Add eps_mu.
+
+2002-05-07  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* cavity.cpp: Check for presence of gain medium.
+
+2002-05-07  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.cpp: Detect bad expressions.
+	* stack.cpp: Ditto.
+
+2002-05-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.cpp: Fix Term(Stack).
+
+2002-05-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Corner case of single waveguide stack.
+
+2002-05-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* scatterer.cpp: Find modes even when doing trivial scatterers.
+
+2002-04-30  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Add support for turning off degenerate handling.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2002-04-18  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Replace type_list by args.
+
+2002-03-20  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* defs.h: Clean up Fortran name handling.
+
+2002-03-18  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* bloch.h: Increase portability.
+	* camfr_wrap.cpp: Ditto.
+	* expression.cpp: Ditto.
+	* scatterer.h: Ditto.
+	* waveguide.h: Ditto.
+
+2002-03-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Remove unrequired casts.
+
+2002-03-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Add support for Section.
+	* defs.h: Ditto.
+	* defs.cpp: Ditto.
+
+2002-03-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* scatterer.h: Bug fix for special scatterers.
+	* scatterer.cpp: Ditto.
+
+2002-02-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mode.h: Add support for better sorting of Bloch modes.
+	* waveguide.h: Ditto.
+	* bloch.cpp: Ditto.
+
+2002-02-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* infstack.cpp: Clean up.
+
+2002-02-11  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* geometry.py: Add support for squares, fix bug.
+
+2002-02-07  Lieven Vanholme  <Lieven.Vanholme@rug.ac.be>
+
+	* bloch.h: Add new GEV Bloch solver.
+	* bloch.cpp: Ditto.
+	* defs.h : Ditto.
+	* defs.cpp : Ditto.
+	* camfr_wrap.cpp: Ditto.
+
+2002-02-07  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* infstack.h: New file.
+	* infstack.cpp: Ditto.
+
+2002-02-01  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* stack.cpp: Implement eps_at and mu_at.
+
+2002-01-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* expression.h: Add support for slab matrix cache.
+	* expression.cpp: Ditto.
+	* interface.cpp: Ditto.
+	* scatterer.h: Ditto.
+	* scatterer.cpp: Ditto.
+	* stack.cpp: Ditto.
+
+2002-01-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* camfr_wrap.cpp: Work around compiler bug.
+
+2001-11-27  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* material.h: Add signedsqrt.
+
+2001-11-23  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mode.h: Virtualise n_eff.
+
+2001-11-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* bloch.h: Add S_flux.
+	* camfr_wrap.cpp: Ditto.
+
+2001-10-29  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* mode.h: Virtualise kz.
+	* field.cpp: Ditto.
+	* interface.cpp: Ditto.
+	* stack.cpp: Ditto.
+	* S_scheme.cpp: Ditto.
+	* T_scheme.cpp: Ditto.
+	* S_scheme_fields.cpp: Ditto.
+	* T_scheme_fields.cpp: Ditto.
+	* bloch.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+	
+2001-10-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * defs.h: Add support fow TE_TM polarisation.
+	* defs.cpp: Ditto.
+	* camfr_wrap.cpp: Ditto.
+	

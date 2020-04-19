@@ -1,0 +1,398 @@
+2006-09-22 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Fix S_flux bug.
+
+2006-04-25 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Use mueller_precision.
+
+2006-02-17 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Refrain from overzealous refining.
+
+2006-02-17 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slabdisp.cpp: Use 45 degree cut.
+
+2006-02-10 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slaboverlap.h: Numerical overlap of off-axis modes.
+	* slaboverlap.cpp: Ditto.
+
+2006-02-10 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slabmode.cpp: Don't add PML twice.
+
+2006-02-09 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slab.cpp: Improve detection of bad estimates.
+
+2006-02-07 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slab.cpp: Improve detection of backward modes.
+
+2006-01-17 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slaboverlap.cpp: Get rid of same().
+
+2005-11-29 Peter Debackere  <Peter.Debackere@UGent.be>
+
+        * slab.cpp: Add option to calculate dispersion relation using kt
+                    from cladding.
+	* slab.h: Ditto.
+	* slabdisp.cpp: Ditto.
+	* slabdisp.h: Ditto.
+	* slabmode.cpp: Ditto.
+
+2005-08-29 Peter Debackere  <Peter.Debackere@UGent.be>
+
+        * slab.cpp: Make metal layers always core candidates.
+
+2005-08-19 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slab.cpp: Make sure old_kt is always relevant.
+
+2005-08-19 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slab.cpp: Don't copy gain material.
+
+2005-06-30 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slaboverlap.cpp: Make more standards compliant.
+
+2005-06-13 Peter Debackere  <Peter.Debackere@UGent.be>
+
+        * slab.cpp: Add ASR solver.
+	* slab.h: Ditto.
+
+2005-02-09 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+        * slab.cpp: Add support for biaxial plane wave estimates.
+        * slab.h: Ditto.
+
+2005-01-28 Peter Debackere  <Peter.Debackere@UGent.be>
+
+	* slab.cpp: First version of of ASR solver.
+
+2005-01-26 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Better stability for mirrored slabs.
+	* slab.h: Ditto.
+	* slaboverlap.cpp: Ditto.
+	* slaboverlap.h: Ditto.
+
+2004-03-04 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Lambda can now be complex.
+	* slabdisp.h: Ditto.
+	* slabdisp.cpp: Ditto.
+	* slaboverlap.cpp: Ditto.
+
+2003-12-08 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slaboverlap.h: Add overlap with plane wave.
+	* slaboverlap.cpp: Ditto.
+
+2003-11-17 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Introduce material_at.
+
+2003-11-03 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slaboverlap.cpp: Relax tolerance.
+
+2003-10-29 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slaboverlap.cpp: Improve detection of normalisation integrals.
+
+2003-08-07 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Throw away bogus estimates.
+
+2003-08-06 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Support for TE_TM in new field calc.
+
+2003-08-01 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.cpp: Add field_calc_heuristic.
+
+2003-07-11 Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* slab.h: Better calculation of mode profiles.
+	* slab.cpp: Ditto.
+	* slabmode.h: Ditto.
+	* slabmode.cpp: Ditto.
+
+2003-05-20 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Even better estimation of max kz.
+
+2003-05-16 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Better estimation of max kz.
+
+2003-05-16 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Better elimination of bogus estimates.
+
+2003-05-16 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Speed up.
+
+2003-05-09 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Reduce zero threshold.
+
+2003-05-09 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Fix memory management bug.
+
+2003-04-14 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.h: Better TM estimate.
+	* slab.cpp: Ditto.
+
+2003-04-14 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.h: Add RCWA estimate.
+	* slab.cpp: Ditto.
+
+2003-03-28 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Relax zero check.
+
+2003-03-24 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Improve handling of false zeros.
+
+2003-03-07 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Tune series solver.
+	* slabdisp.cpp: Ditto.
+
+2003-02-17 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.h: Add series solver.
+	* slab.cpp: Ditto.
+	* slaboverlap.cpp: Ditto.
+	* slaboverlap.h: Ditto.
+
+2003-01-31 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Make insensitive to whether E_wall is explicitly set.
+
+2003-01-17 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabdisp.cpp: Better criterion for scaling.
+
+2002-12-20 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.h: Add get_cos, get_sin.
+	* slabmode.cpp: Ditto.
+
+2002-12-12 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Consolidate signed_sqrt.
+
+2002-12-02 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Switch to enable backward modes.
+
+2002-12-02 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Tmp disable backward modes.
+
+2002-11-27 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.h: Add eps_avg.
+	* slab.cpp: Ditto.
+
+2002-10-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Better check for uniform Slabs.
+
+2002-10-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Improve detection of non-zero minima.
+
+2002-10-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Rename left/right to lower/upper.
+	* slabdisp.cpp: Ditto.
+	* slabdisp.h: Ditto.
+	* slabmode.cpp: Ditto.
+	* slabmode.h: Ditto.
+
+2002-07-15 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Change threshold for complex modes.
+
+2002-07-15 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Major in change in the way PML is defined.
+	* slab.h: Ditto.
+	* slabmode.cpp: Ditto.
+
+2002-06-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Fix copy-and-paste error.
+
+2002-06-05 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Make comparison with zero more robust.
+
+2002-05-31 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Improve support for complex modes.
+
+2002-05-31 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Improve support for surface plasmons.
+
+2002-05-31 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Improve safe_mult heuristics.
+
+2002-05-31 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Fix TE_TM polarisation.
+	* slab.cpp: Lower precision.
+
+2002-05-28 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Improve stability for TEM mode.
+	* slaboverlap.cpp: Ditto.
+
+2002-05-13 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Improve symmetry for backward calc.
+
+2002-05-08 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Check values arguments of eps_at and mu_at.
+        * slab.h: Ditto.
+
+2002-05-07 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Use Material::eps_mu.
+        * slab.cpp: Ditto.
+
+2002-05-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Allow for backward calculation of fields.
+        * slabmode.h: Ditto.
+        * slab.cpp: Ditto.
+
+2002-05-02 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Improve parameters to mueller_multiple.
+
+2002-05-01 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Don't truncate modes prematurely.
+	            Improve stability.
+
+2002-04-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Add support for turning off degenerate handling.
+
+2002-04-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Rework handling of degenerate modes.
+
+2002-04-30 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabdisp.cpp: Only scale when tracking.
+
+2002-04-30 Lieven Vanholme  <Lieven.Vanholme@rug.ac.be>
+
+        * slabmode.cpp: Reset scaling after core region.
+
+2002-03-18 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.cpp: Improve portability.
+	* slaboverlap.cpp: Ditto.
+	* slaboverlap.h: Ditto.
+
+2002-03-14 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabmode.h: Remember kt.
+	* slabmode.cpp: Dito.
+
+2002-03-14 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Refactor, fix memory leak, fix tracing.
+
+2002-03-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Make use of new interface for traceroot.
+
+2002-03-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Fix typo.
+
+2002-03-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slabdisp.cpp: Micro-optimise.
+
+2002-02-12 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Improve definition of core and cladding (again).
+	* slabdisp.cpp: Ditto.
+	* slabdisp.h: Ditto.
+
+2002-02-06 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Improve definition of core and cladding.
+	* slabdisp.cpp: Ditto.
+	
+2002-01-29 Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Update support for parameter getting/setting.
+
+2001-01-21  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.h: Add support for parameter getting/setting.
+	* slab.cpp: Ditto.
+	* slabdisp.cpp: Ditto.
+
+2001-11-27  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Fix signs.
+
+2001-11-16  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Fix multiplication.
+
+2001-11-16  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Fix normalisation.
+
+2001-11-09  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Fix normalisation.
+
+2001-11-08  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Resolve name conflict.
+
+2001-11-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slabmode.cpp: Account for TE_TM polarisation.
+
+2001-11-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Normalise modes in TE_TM case.
+	
+2001-10-29  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* slab.cpp: Virtualise kz.
+	* slabmode.h: Ditto.
+	* slabmode.cpp: Ditto.
+	* slaboverlap.cpp: Ditto.
+
+2001-10-02  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+        * slab.cpp: Add support fow TE_TM polarisation.
+	* slab.h: Ditto.

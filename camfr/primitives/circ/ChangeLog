@@ -1,0 +1,74 @@
+2006-02-07  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circoverlap.cpp: Relax tolerance on radius check.
+	
+2006-02-07  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circ.cpp: Improve detection of backward modes.
+
+2005-08-19  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circ.cpp: Don't copy gain material.
+
+2005-06-30  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circ.cpp: Make more standards compliant.
+	* circoverlap.cpp: Ditto.
+
+2004-04-15  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circ.cpp: Better handling of backward modes.
+	* circmode.h: Ditto.
+	* circmode.cpp: Ditto.
+
+2003-11-17  Peter Bienstman  <Peter.Bienstman@UGent.be>
+
+	* circ.h: Introduce material_at.
+	* circ.cpp: Ditto.
+
+2003-07-19  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circ.cpp: Relax tolerance on remove_copies.
+	* circoverlap.cpp: Ditto.
+
+2002-08-09  Mihai Ibanescu  <michel@mit.edu>
+
+	* circ.cpp: Add support for multiring structures.
+	* circ.h: Ditto.
+	* circdisp.cpp: Ditto.
+	* circdisp.h: Ditto.
+	* circmode.cpp: Ditto.
+	* circmode.h: Ditto.
+	* circoverlap.cpp: Ditto.
+	* circoverlap.h: Ditto.
+	* circ_M_util.cpp: New file.
+	* circ_M_util.h: New file.
+
+2002-07-15  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circ.cpp: Major change in the way PML is defined.
+	* circ.h: Ditto.
+
+2002-05-08  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circ.cpp: Check arguments to eps_at and mu_at.
+	* circ.h: Ditto.
+
+2002-05-07  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circmode.cpp: Prevent division by 0.
+
+2002-03-18  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circ.h: Increase portability.
+	* circoverlap.cpp: Ditto.
+	* circoverlap.h: Ditto.
+
+2002-03-06  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circ.cpp: Make use of new interface for traceroot.
+
+2001-10-29  Peter Bienstman  <Peter.Bienstman@rug.ac.be>
+
+	* circoverlap.cpp: Virtualise kz.
+	

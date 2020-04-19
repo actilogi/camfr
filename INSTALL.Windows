@@ -1,0 +1,81 @@
+To install CAMFR on a Windows platform, it's easiest to use the binary 
+installers for the following packages:
+
+- Python 2.6 from http://www.python.org
+- NumPy and SciPy from http://www.scipy.org
+- matplotlib from http://matplotlib.sourceforge.net/
+- CAMFR itself
+
+You can also compile CAMFR from sources, which is useful if you e.g. want to
+link with a LAPACK library which is specifically optimised for your system,
+or if you want to develop on a Windows machine.
+
+As compiler, we recommend Microsoft Visual Studio .NET 2008, as this is the 
+same version that was used to compile Python 2.6. The express version is
+freely available from http://www.microsoft.com/Express/ .
+Other versions (e.g. Visual Studio .NET 2005) use different run-time 
+libraries which can cause incompatibilities.
+
+First, install the build tool scons (> 1.2.0) )from http://www.scons.org, 
+as well as the versioning control tool bzr from http://bazaar-vcs.org/.
+Then, save yourself a lot of trouble and copy a directory over from a fellow 
+developper.
+
+If that's not possible, you'll have to go through a number of steps to install
+all the libraries, which we'll discuss now.
+
+* Download the Boost library. There are binary installers availble from
+http://www.boostpro.com/products/free
+
+
+ and the bjam executable 
+from 
+http:\\www.boost.org. You don't need to install the whole library, just 
+Boost.Python, so you can cd to 
+http://www.boostpro.com/products/free
+C:\Program Files\boost_1_38_0\boost_1_38_0\libs\python\build 
+
+and do 
+
+bjam.exe toolstet=msvc release
+
+* Download Blitz from http://www.oonumerics.org/blitz/. There is a
+Blitz-VS.NET.zip in the top level directory blitz-0.9. Unzip its contents to
+blitz-0.9, not to blitz-0.9/Blitz-VS.NET. Open the file Blitz-Library.sln. 
+First, make sure the drop-down box in the toolbar says 'release' rather than
+'debug'. Secondly, you need to make sure the library uses the multithreaded 
+run time. Select 'blitz' from the target window on the right which says 
+Solution 'Blitz-Library', then go to Project:Properties:C/C++:Code Generation
+and select Runtime Library: Multithreaded DLL. Then do Build:Build Blitz to
+create the library.
+
+* Copy machine_cfg.py.MSVC to machine_cfg.py and edit if needed.
+
+* Visual Studio does not come with a Fortran compiler, so we'll use the GNU
+Fortran compiler for that. Install MinGW from http://www.mingw.org, e.g.
+version 5.0.2 from the 'Proposed' branch, which avoids having to download
+multiple separate packages. Create a Fortran directory, and dump all the
+*.f files from the camfr source there (in math/bessel/slatec and 
+math/calculus/polyroot). Also copy the BLAS and LAPACK files from their
+respective SRC directories from the lapack source you can download from
+http://www.netlib.org/lapack/.
+
+Then do
+
+g77 -O3 -c *.f
+ar -cr fortran.lib *.o
+ranlib fortran.lib
+
+Copy C:\MinGW\lib\libg2c.a to fortran\g2c.lib (i.e. renaming it in the
+process) as well as C:\MinGW\lib\gcc\mingw32\3.4.4\libgcc.a to fortran\gcc.lib
+
+* Download the latest CAMFR source code from the repository at Launchpad:
+Go into a directory C:\Program Files\source\camfr, and do
+
+bzr branch lp:camfr
+
+(Currently, you can still use SVN from the Sourceforge site as well.)
+
+* Now open a Visual Studio command line, go to the camfr directory and type
+python setup.py install to install CAMFR, or python setup.py bdist_wininst to
+create a binary installer.

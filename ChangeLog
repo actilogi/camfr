@@ -1,0 +1,132 @@
+ - Better handling of near-singular matrices in GARCLED.py.
+ - Added routines to Geometry to convert images into an Expression
+   (Lieven Vanholme).
+
+CAMFR 1.3:
+
+ - Added code to model spontaneous emission and light extraction in light
+   emitting diodes, both for planar structures and for structures with a
+   2D periodic grating in the cavity or in the substrate. 
+ - Now a BlochStack can also be used inside a Stack, either as first term,
+   last term or both:
+
+      bs = BlochStack(...)
+      s = Stack(bs(0) + ... + bs(0))
+
+   In this case, the reflection and transmission coefficients relate to
+   BlochModes, rather than to the SlabModes in the last slab of the 
+   BlochStack, which is much more useful. (Pieter Dumon)
+ - All plotting functions like plot(stack), animate_field(), ... are now
+   class member functions and need to be called as stack.plot().
+ - By default, NumPy and matplotlib are imported to create a more 
+   complete Matlab-like environment. SciPy is also required for the RCLED
+   modelling code.
+ - Added Dispersive_Material_Factory, to make it easier to work with 
+   materials whose index is defined as a table in a text file.
+ - Reworked manual, a.o. integrating plotting more with the rest of the 
+   examples.
+ - Better stability when joining together two slabs which are each other's
+   mirror image. (This can occur when modelling triangular lattices.)
+ - New solver for 1D slabs based on adaptive spatial resolution. Very useful
+   for metallic structures. (Peter Debackere)
+ - Stack.fw_bw() and BlochMode.fw_bw() can now take an optional extra argument
+   to specify the limit value of z, i.e. Plus or Min.
+ - get_kt() and set_kt() for Planars now works again (Peter Vandersteegen).
+ - Fix field plot bug for Planars.
+ - The wavelength can now be complex (Thanks to KC Huang for requesting this)
+ - Extra stability when working with backwards and complex modes.
+ - The 'filename' argument in the plotting functions is now a named argument 
+   rather than a positional one, i.e. it has to be specified by 
+   filename="string", rather than just by "string" on the correct position.
+ 
+CAMFR 1.2 (2003-11-12):
+
+ - circular structures can now have multiple radial discontinuities (Mihai
+   Ibanescu)
+ - interactive plotting utilities (Lieven Vanholme) to look at fields,
+   animations, Poynting vectors, save to file, zoom in, ... . Try 
+   plot(Stack), plot(Slab), plot(BlochStack)
+ - improved stability for Slabs, especially for wide photonic crystal
+   structures
+ - a new solver suitable for high loss materials. See set_solver(series)
+ - added various small utility functions: Stack.width(), BlochStack.width(),
+   Cavity.width(), Cavity.length(), Cavity.bot_stack(), Cavity.top_stack()
+ - the MATLAB bindings are updated to the latest versions of MATLAB and
+   pymat (the latter needs to be installed separately from 
+   http://pymat.sf.net) (Ross Stanley)
+
+
+CAMFR 1.1 (2003-03-05):
+
+ - improved stability for Slabs
+ - inc_S_flux and ext_S_flux are now much faster
+ - Python doesn't terminate abruptly anymore when faced with some user
+   errors or lost modes
+ - the refractive index profile can now be displayed on top of the 
+   field plots (Lieven Vanholme)
+ - animation of field profiles is much smoother (Lieven Vanholme)
+ - field plots can be saved in a variety of formats (jpg, gif, png, ...)
+   Animations can be saved as an (uncompressed) animated gif (Lieven Vanholme)
+
+     e.g. plot_field(s, lambda f : f.E2().real, r_x, r_z, "field.jpg")
+
+ - plot_n and plot_field now works for BlochStacks, BlochModes and Cavities
+   too
+ - added Stack.fw_bw(z), which returns a tuple of the expansion 
+   coefficients of the forward and backward field at position z in the Stack.
+   Also works for Blochmodes.
+
+     e.g. fw, bw = stack.fw_bw(0)
+	  fw, bw = blochstack.mode(0).fw_bw(0)
+
+ - Cavity.find_modes_in_region() has been renamed to Cavity::find_all_modes()
+ - the constructor for Cavity has been changed from Cavity(top, bottom) to
+   Cavity(bottom,top). This makes the coordinate system more intuitive.
+ - arbitrary sources can now be placed inside a cavity
+
+     e.g. cavity.set_source(fw, bw)
+
+ - fixed memory corruption when doing exotic things with Expressions
+ - fixed crash when plotting uniform layers or planars
+
+
+CAMFR 1.0 (2002-09-24):
+
+ - faster binaries, especially under Windows, which can be up to three
+   times faster than CAMFR 0.9
+ - new way of defining complicated structures using geometric shapes and
+   automatic discretisation
+ - more excitations for cartesian structures: gaussians, plane waves 
+   and arbitrary shaped functions (Lieven Vanholme)
+ - support for stacks terminated by an infinite repetition of a basic 
+   period
+ - more robust method of calculating Bloch modes (Lieven Vanholme)
+   and their field profiles
+ - Matlab link under Windows is by default enabled and installed
+ - integrated plotting and animation routines for field profiles in a stack
+   (Lieven Vanholme), optionally using Matlab as backend
+ - added stack.n(), stack.mu() and stack.eps()
+ - added Poynting vector components field.S1(), field.S2() and field.Sz()
+   and its magnitude field.abs_S()
+ - better handling of loosely coupled or degenerate waveguides
+ - better handling of metals, also metals with purely imaginary refractive
+   index
+ - more flexible way of plotting field profiles of modes
+ - CAMFR now runs reliably under graphical IDE environments like Idle
+   or ActiveState's PythonWin
+ - various documentation updates and minor bugfixes
+ - more graceful handling of user errors
+
+Important to note if you are upgrading from a pre 1.0 version of CAMFR are
+the following changes:
+
+ - set_left_wall and set_right_wall are replaced by set_lower_wall and 
+   set_upper_wall respectively
+ - imaginary thicknesses and coordinates are deprecated: PML is set by
+   set_lower_PML, set_upper_PML and set_circ_PML
+
+
+
+CAMFR 0.9 (2001-09-06):
+
+ - initial public release
